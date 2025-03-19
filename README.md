@@ -1,6 +1,7 @@
 Quy trình thực hiện để tránh bị conflict mỗi khi code
 
-Bước đầu tiên thực hiện trước khi vào code, đó là kéo code từ master về máy tính cá nhân
+Bước đầu tiên thực hiện trước khi vào code, đó là kéo code từ master về máy tính cá nhân:
+
 git checkout master
 git pull origin master
 
