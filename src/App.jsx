@@ -7,6 +7,7 @@ function App() {
   return (
     <>
       <h1 className="text-red-500">Đây là tailwind và react đang hoạt động</h1>
+      <h1>Skibidi toilet dopdop</h1>
     </>
   );
 }
