@@ -16,8 +16,10 @@ Bước 3: code xong thì đẩy code lên nhánh
 git push origin NguyenVanDuc  
 
 Bước cuối: gộp code từ nhánh vào master (chỉ nên gộp khi hoàn thành được một phần lớn, còn làm lặt vặt thì từ từ merge cũng được :v)  
-git checkout master           
+git checkout master    
+git pull origin master  
 git merge NguyenVanDuc       
 git push origin master    
+Hoặc lên thẳng trên git pull request cho nhanh  
 
 Hiểu nhanh GitHub: https://www.youtube.com/watch?v=-XsRLyKV9_k
