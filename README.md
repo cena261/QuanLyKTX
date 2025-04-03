@@ -2,7 +2,7 @@ Quy trình thực hiện để tránh bị conflict mỗi khi code
 
 Bước đầu tiên thực hiện trước khi vào code, đó là kéo code từ master về máy tính cá nhân  
 git checkout master  
-git pull origin master
+git pull origin master  
 
 Bước 2: làm việc trên nhánh riêng chứ ko làm trong master  
 git checkout NguyenVanDuc //Chuyển sang nhánh của đuk  
@@ -20,4 +20,4 @@ git checkout master
 git merge NguyenVanDuc  
 git push origin master
 
-Hiểu nhanh GitHub: https://www.youtube.com/watch?v=-XsRLyKV9_k
+Hiểu nhanh GitHub: https://www.youtube.com/watch?v=-XsRLyKV9_k  
