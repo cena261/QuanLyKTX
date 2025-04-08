@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Login.css";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   useEffect(() => {
@@ -24,8 +25,14 @@ const LoginPage = () => {
     };
   }, []);
 
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate("/dashboard");
+  };
+
   return (
-    <div className="">
+    <div className="login-page">
       <div className="background bg-[url('/img/schoolpic.jpg')] bg-cover bg-center bg-no-repeat relative flex justify-center items-center min-h-screen">
         <div className="overlay absolute inset-0 bg-black/50 z-0 flex justify-center items-center"></div>
         <div className="container relative w-[850px] h-[550px] bg-white rounded-4xl shadow-lg z-10 m-[20px] overflow-hidden">
@@ -43,7 +50,7 @@ const LoginPage = () => {
               <div className="forgot-link">
                 <a href="#">Quên mật khẩu ?</a>
               </div>
-              <button type="submit" className="btn">
+              <button onClick={handleLogin} type="submit" className="btn">
                 Login
               </button>
               <p>Nếu bạn chưa có tài khoản, hãy liên hệ trang hỗ trợ</p>
@@ -82,7 +89,7 @@ const LoginPage = () => {
               <div className="forgot-link">
                 <a href="#">Quên mật khẩu ?</a>
               </div>
-              <button type="submit" className="btn">
+              <button onClick={handleLogin} type="submit" className="btn">
                 Login
               </button>
               <p>Nếu bạn chưa có tài khoản, hãy liên hệ trang hỗ trợ</p>
