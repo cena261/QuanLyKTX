@@ -2,5 +2,12 @@
 
 @theme {
   --color-primary: #7494ec;
+  --color-primaryBlur: #f2f5fe;
+  --color-secondary: #6b7280;
   --color-lightgrey: #dbdbdb;
+}
+@layer base {
+  h5 {
+    @apply text-secondary;
+  }
 }

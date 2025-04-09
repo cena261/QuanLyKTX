@@ -43,7 +43,7 @@ function Header() {
           <img src={DownArrow} alt="Arrow" />
         </button>
       </div>
-      <div className="text-2xl text-primary mr-4 md:hidden">
+      <div className="cursor-pointer text-2xl text-primary mr-4 md:hidden">
         <i class="bx bx-menu"></i>
       </div>
     </div>

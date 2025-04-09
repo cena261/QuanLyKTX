@@ -4,6 +4,7 @@ export default {
     extend: {
       colors: {
         primary: "#7494ec",
+        primaryBlur: "rgba(116, 148, 236, 0.1)",
       },
     },
   },
