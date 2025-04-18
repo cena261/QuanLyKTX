@@ -10,4 +10,8 @@
   h5 {
     @apply text-secondary;
   }
+
+  body:not(.login-page) {
+    font-family: "Inter", "Roboto", sans-serif;
+  }
 }

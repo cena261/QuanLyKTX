@@ -1,15 +1,14 @@
-import Header from "../components/Header";
-import Sidebar from "../components/Sidebar/Sidebar";
+import { useState } from "react";
+import ManagerLayout from "../components/Layout/ManagerLayout.jsx";
 
 function Dashboard() {
   return (
-    <div>
-      <Header />
-      <Sidebar />
+    <ManagerLayout>
+      {/* Nội dung trang Dashboard */}
       <div className="text-2xl font-bold text-center mt-10">
         Welcome to the Dashboard!
       </div>
-    </div>
+    </ManagerLayout>
   );
 }
 

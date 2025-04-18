@@ -61,8 +61,8 @@ const SidebarItemContainer = () => {
 
 function Sidebar() {
   return (
-    <div className="w-[250px] h-full">
-      <div className="ml-4 mt-4">
+    <div className="w-full h-full">
+      <div className="mt-5 mr-4 md:ml-4 md:mt-4 md:mr-0">
         <ul>
           <SidebarItemContainer />
         </ul>

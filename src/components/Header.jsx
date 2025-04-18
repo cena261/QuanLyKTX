@@ -1,16 +1,17 @@
+import { useNavigate } from "react-router-dom";
 import DashboardLogo from "../assets/img/sv_logo_dashboard.png";
 import SearchLogo from "../assets/icons/search-normal.png";
 import Homepage from "../assets/icons/home-page.png";
 import Notification from "../assets/icons/bell.png";
 import DownArrow from "../assets/icons/down-arrow.png";
 
-function Header() {
+function Header({ onToggleSidebar }) {
   return (
-    <div className="w-full h-[85px] flex justify-between items-center border-b border-b-lightgrey">
+    <div className="fixed top-0 left-0 right-0 bg-white w-full h-[85px] flex justify-between items-center border-b border-b-lightgrey">
       <img
         src={DashboardLogo}
         alt="Logo"
-        className="w-40 object-contain ml-4 md:w-[250px] md:h-[54px]"
+        className="w-44 object-contain ml-4 md:w-[250px] md:h-[54px] z-20"
       />
       <div className="relative hidden md:block">
         <input
@@ -26,7 +27,10 @@ function Header() {
           />
         </button>
       </div>
-      <button className="cursor-pointer flex">
+      <button
+        onClick={() => navigate("/dashboard")}
+        className="cursor-pointer flex"
+      >
         <img src={Homepage} alt="Homepage logo" />
         <p className="hidden md:block md:ml-2.5">Trang chủ</p>
       </button>
@@ -43,7 +47,10 @@ function Header() {
           <img src={DownArrow} alt="Arrow" />
         </button>
       </div>
-      <div className="cursor-pointer text-2xl text-primary mr-4 md:hidden">
+      <div
+        className="cursor-pointer text-2xl text-primary mr-4 md:hidden"
+        onClick={onToggleSidebar}
+      >
         <i class="bx bx-menu"></i>
       </div>
     </div>
