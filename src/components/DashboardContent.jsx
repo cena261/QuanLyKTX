@@ -331,15 +331,6 @@ function DashboardContent() {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
   const formatNumber = (number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
@@ -441,7 +432,7 @@ function DashboardContent() {
           {/* Tabs */}
           <div className="flex mb-4 border-b">
             <button
-              className={`px-4 py-2 ${
+              className={`px-4 py-2 cursor-pointer ${
                 activeTab === "all"
                   ? "border-b-2 border-primary text-primary"
                   : "text-gray-500"
@@ -451,7 +442,7 @@ function DashboardContent() {
               All
             </button>
             <button
-              className={`px-4 py-2 ${
+              className={`px-4 py-2 cursor-pointer ${
                 activeTab === "toaA"
                   ? "border-b-2 border-primary text-primary"
                   : "text-gray-500"
@@ -461,7 +452,7 @@ function DashboardContent() {
               Tòa A
             </button>
             <button
-              className={`px-4 py-2 ${
+              className={`px-4 py-2 cursor-pointer ${
                 activeTab === "toaB"
                   ? "border-b-2 border-primary text-primary"
                   : "text-gray-500"
@@ -767,7 +758,7 @@ function DashboardContent() {
 
           <button
             onClick={() => setShowPaymentsOverlay(true)}
-            className="w-full mt-4 text-sm text-primary py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="w-full mt-4 text-sm text-primary py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Xem tất cả
           </button>
@@ -818,7 +809,7 @@ function DashboardContent() {
 
           <button
             onClick={() => setShowRepairOverlay(true)}
-            className="w-full mt-4 text-sm text-primary py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="w-full mt-4 text-sm text-primary py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Xem tất cả
           </button>
