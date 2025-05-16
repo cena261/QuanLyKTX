@@ -39,6 +39,12 @@
   font-weight: bold;
 }
 
+.error-login {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
 .input-box {
   position: relative;
   margin: 30px 0;

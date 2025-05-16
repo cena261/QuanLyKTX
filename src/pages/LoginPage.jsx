@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Login.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [studentUsername, setStudentUsername] = useState("");
+  const [studentPassword, setStudentPassword] = useState("");
+  const [adminUsername, setAdminUsername] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const container = document.querySelector(".container");
     const qtvBtn = document.querySelector(".administrator-btn");
@@ -10,10 +21,12 @@ const LoginPage = () => {
 
     const handleQtvClick = () => {
       container.classList.add("active");
+      setIsAdmin(true);
     };
 
     const handleStdClick = () => {
       container.classList.remove("active");
+      setIsAdmin(false);
     };
 
     qtvBtn.addEventListener("click", handleQtvClick);
@@ -25,10 +38,30 @@ const LoginPage = () => {
     };
   }, []);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
-  const handleLogin = () => {
-    navigate("/dashboard");
+  const handleStudentLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await login(studentUsername, studentPassword, false);
+      setError("");
+    } catch (err) {
+      setError("Sai thông tin tài khoản hoặc mật khẩu");
+    }
+  };
+
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await login(adminUsername, adminPassword, true);
+      setError("");
+    } catch (err) {
+      setError("Sai thông tin tài khoản hoặc mật khẩu");
+    }
   };
 
   return (
@@ -37,20 +70,38 @@ const LoginPage = () => {
         <div className="overlay absolute inset-0 bg-black/50 z-0 flex justify-center items-center"></div>
         <div className="container relative w-[850px] h-[550px] bg-white rounded-4xl shadow-lg z-10 m-[20px] overflow-hidden">
           <div className="form-box login">
-            <form action="" className="w-full">
+            <form onSubmit={handleStudentLogin} className="w-full">
               <h1>Login</h1>
               <div className="input-box">
-                <input type="text" placeholder="Mã số sinh viên" required />
+                <input
+                  type="text"
+                  placeholder="Mã số sinh viên"
+                  required
+                  value={studentUsername}
+                  onChange={(e) => setStudentUsername(e.target.value)}
+                />
                 <i className="bx bxs-user"></i>
               </div>
               <div className="input-box">
-                <input type="password" placeholder="Mật khẩu" required />
+                <input
+                  type="password"
+                  placeholder="Mật khẩu"
+                  required
+                  value={studentPassword}
+                  onChange={(e) => {
+                    setStudentPassword(e.target.value);
+                    setError("");
+                  }}
+                />
                 <i className="bx bxs-lock-alt"></i>
               </div>
-              <div className="forgot-link">
+              {error && !isAdmin && (
+                <div className="text-red-500 text-xs error-login">{error}</div>
+              )}
+              <div className="forgot-link mt-2">
                 <a href="#">Quên mật khẩu ?</a>
               </div>
-              <button onClick={handleLogin} type="submit" className="btn">
+              <button type="submit" className="btn">
                 Login
               </button>
               <p>Nếu bạn chưa có tài khoản, hãy liên hệ trang hỗ trợ</p>
@@ -76,20 +127,38 @@ const LoginPage = () => {
           </div>
 
           <div className="form-box administrator">
-            <form action="">
+            <form onSubmit={handleAdminLogin}>
               <h1>Login</h1>
               <div className="input-box">
-                <input type="text" placeholder="Tài khoản quản trị" required />
+                <input
+                  type="text"
+                  placeholder="Tài khoản quản trị"
+                  required
+                  value={adminUsername}
+                  onChange={(e) => setAdminUsername(e.target.value)}
+                />
                 <i className="bx bxs-user"></i>
               </div>
               <div className="input-box">
-                <input type="password" placeholder="Mật khẩu" required />
+                <input
+                  type="password"
+                  placeholder="Mật khẩu"
+                  required
+                  value={adminPassword}
+                  onChange={(e) => {
+                    setAdminPassword(e.target.value);
+                    setError("");
+                  }}
+                />
                 <i className="bx bxs-lock-alt"></i>
               </div>
-              <div className="forgot-link">
+              {error && isAdmin && (
+                <div className="text-red-500 text-xs error-login">{error}</div>
+              )}
+              <div className="forgot-link mt-2">
                 <a href="#">Quên mật khẩu ?</a>
               </div>
-              <button onClick={handleLogin} type="submit" className="btn">
+              <button type="submit" className="btn">
                 Login
               </button>
               <p>Nếu bạn chưa có tài khoản, hãy liên hệ trang hỗ trợ</p>

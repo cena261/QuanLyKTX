@@ -4,7 +4,6 @@ import Room from "../../assets/icons/Sidebar/room-sb.svg?react";
 import HumanResources from "../../assets/icons/Sidebar/hr-sb.svg?react";
 import Payment from "../../assets/icons/Sidebar/payment-sb.svg?react";
 import Request from "../../assets/icons/Sidebar/request-sb.svg?react";
-import Setting from "../../assets/icons/Sidebar/setting-sb.svg?react";
 import Support from "../../assets/icons/Sidebar/support-sb.svg?react";
 import Logout from "../../assets/icons/Sidebar/logout-sb.svg?react";
 import SidebarItem from "./SidebarItem";
@@ -24,24 +23,20 @@ const items = [
     icon: <Room className="w-[20px] h-[20px]" alt="RoomMNGLogo" />,
   },
   {
-    label: "Quản lý nhân viên",
-    icon: <HumanResources className="w-[20px] h-[20px]" />,
-  },
-  {
     label: "Quản lý hóa đơn",
     icon: <Payment className="w-[20px] h-[20px]" />,
   },
   {
+    label: "Quản lý thông báo",
+    icon: <HumanResources className="w-[20px] h-[20px]" />,
+  },
+  {
+    label: "Quản lý hợp đồng",
+    icon: <Support className="w-[20px] h-[20px]" />,
+  },
+  {
     label: "Quản lý yêu cầu",
     icon: <Request className="w-[20px] h-[20px]" />,
-  },
-  {
-    label: "Cài đặt",
-    icon: <Setting className="w-[20px] h-[20px]" />,
-  },
-  {
-    label: "Hỗ trợ",
-    icon: <Support className="w-[20px] h-[20px]" />,
   },
   {
     label: "Đăng xuất",

@@ -32,7 +32,7 @@ function DashboardLayout({ children }) {
         </div>
 
         {/* Nội dung chính */}
-        <div className="w-full md:ml-[250px] p-4">{children}</div>
+        <div className="w-full md:ml-[250px] p-2">{children}</div>
       </div>
 
       {/* Overlay */}

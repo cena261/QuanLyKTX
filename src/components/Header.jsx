@@ -1,13 +1,30 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import authService from "../services/auth.service";
 import DashboardLogo from "../assets/img/sv_logo_dashboard.png";
 import SearchLogo from "../assets/icons/search-normal.png";
 import Homepage from "../assets/icons/home-page.png";
 import Notification from "../assets/icons/bell.png";
 import DownArrow from "../assets/icons/down-arrow.png";
+import { useNavigate } from "react-router-dom";
 
 function Header({ onToggleSidebar }) {
+  const { user } = useAuth();
+  const [adminInfo, setAdminInfo] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAdminInfo = async () => {
+      if (user?.username) {
+        const info = await authService.getAdminInfo(user.username);
+        setAdminInfo(info);
+      }
+    };
+    fetchAdminInfo();
+  }, [user]);
+
   return (
-    <div className="fixed top-0 left-0 right-0 bg-white w-full h-[85px] flex justify-between items-center border-b border-b-lightgrey">
+    <div className="fixed top-0 left-0 right-0 bg-white w-full h-[85px] flex justify-between items-center border-b border-b-lightgrey z-10">
       <img
         src={DashboardLogo}
         alt="Logo"
@@ -40,8 +57,12 @@ function Header({ onToggleSidebar }) {
       </button>
       <div className="hidden mr-4 md:block md:flex md:gap-2 md:mr-12">
         <div className="">
-          <h4 className="leading-none">Admin User</h4>
-          <h6 className="text-sm opacity-50 leading-none">admin@gmail.com</h6>
+          <h4 className="leading-none mb-1">
+            {adminInfo?.hoTen || user?.username || "Admin User"}
+          </h4>
+          <h6 className="text-sm opacity-50 leading-none">
+            {adminInfo?.email || user?.email || "admin@gmail.com"}
+          </h6>
         </div>
         <button className="cursor-pointer px-1 py-1">
           <img src={DownArrow} alt="Arrow" />
@@ -51,7 +72,7 @@ function Header({ onToggleSidebar }) {
         className="cursor-pointer text-2xl text-primary mr-4 md:hidden"
         onClick={onToggleSidebar}
       >
-        <i class="bx bx-menu"></i>
+        <i className="bx bx-menu"></i>
       </div>
     </div>
   );
