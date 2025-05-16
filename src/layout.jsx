@@ -1,4 +1,4 @@
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/sidebar";
 import Header from "./components/Header";
 
 function Layout({ children }) {
@@ -6,7 +6,7 @@ function Layout({ children }) {
     <div className="flex">
       <Sidebar />
       <div className="flex-1">
-        <Header /> {/* Thêm Header nếu cần */}
+        <Header />
         <div className="pt-[85px] p-6">{children}</div>
       </div>
     </div>

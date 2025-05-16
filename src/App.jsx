@@ -5,6 +5,9 @@ import BillPayment from "./pages/Bill";
 import PaymentConfirmation from "./pages/Pay-confirm";
 import PersonalInfo from "./pages/PersonalInfo";
 import Layout from "./Layout";
+import RoomInfo from "./pages/RoomInfo";
+import ContractExtension from "./pages/Contract";
+import RoomChange from "./pages/RoomChange";
 
 function App() {
   return (
@@ -41,6 +44,27 @@ function App() {
           element={
             <Layout>
               <PersonalInfo />
+            </Layout>
+          }/>
+          <Route
+          path="/room-info"
+          element={
+            <Layout>
+              <RoomInfo />
+            </Layout>
+          }/>
+          <Route
+          path="/contract"
+          element={
+            <Layout>
+              <ContractExtension />
+            </Layout>
+          }/>
+          <Route
+          path="/room-change"
+          element={
+            <Layout>
+              <RoomChange />
             </Layout>
           }/>
       </Routes>

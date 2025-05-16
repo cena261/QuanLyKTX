@@ -59,109 +59,34 @@ function PersonalInfo() {
 
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
             <div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Mã hồ sơ:</p>
-                <p className="font-medium">{studentData.maHoSo}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">MSSV:</p>
-                <p className="font-medium">{studentData.mssv}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">CCCD:</p>
-                <p className="font-medium">{studentData.cccd}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Họ tên:</p>
-                <p className="font-medium">{studentData.hoTen}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Giới tính:</p>
-                <p className="font-medium">{studentData.gioiTinh}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Ngày sinh:</p>
-                <p className="font-medium">{studentData.ngaySinh}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Nơi sinh:</p>
-                <p className="font-medium">{studentData.noiSinh}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Dân tộc:</p>
-                <p className="font-medium">{studentData.danToc}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Số điện thoại:</p>
-                <p className="font-medium">{studentData.soDienThoai}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Email:</p>
-                <p className="font-medium">{studentData.email}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Ngày bắt đầu:</p>
-                <p className="font-medium">{studentData.ngayBatDau}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Tình trạng học phí:</p>
-                <p className="font-medium">{studentData.tinhTrangHocPhi}</p>
-              </div>
+              <InfoItem label="Mã hồ sơ" value={studentData.maHoSo} />
+              <InfoItem label="MSSV" value={studentData.mssv} />
+              <InfoItem label="CCCD" value={studentData.cccd} />
+              <InfoItem label="Họ tên" value={studentData.hoTen} />
+              <InfoItem label="Giới tính" value={studentData.gioiTinh} />
+              <InfoItem label="Ngày sinh" value={studentData.ngaySinh} />
+              <InfoItem label="Nơi sinh" value={studentData.noiSinh} />
+              <InfoItem label="Dân tộc" value={studentData.danToc} />
+              <InfoItem label="Số điện thoại" value={studentData.soDienThoai} />
+              <InfoItem label="Email" value={studentData.email} />
+              <InfoItem label="Ngày bắt đầu" value={studentData.ngayBatDau} />
+              <InfoItem label="Tình trạng học phí" value={studentData.tinhTrangHocPhi} />
             </div>
 
             <div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Mã phòng:</p>
-                <p className="font-medium">{studentData.maPhong}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Lớp:</p>
-                <p className="font-medium">{studentData.lop}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Khóa học:</p>
-                <p className="font-medium">{studentData.khoaHoc}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Ngành:</p>
-                <p className="font-medium">{studentData.nganh}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Chuyên ngành:</p>
-                <p className="font-medium">{studentData.chuyenNganh}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Ngành:</p>
-                <p className="font-medium">{studentData.nganh}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Bậc đào tạo:</p>
-                <p className="font-medium">{studentData.bacDaoTao}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Loại hình đào tạo:</p>
-                <p className="font-medium">{studentData.loaiHinhDaoTao}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Phòng:</p>
-                <p className="font-medium">{studentData.phong}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Ngày bắt đầu thuê phòng:</p>
-                <p className="font-medium">{studentData.ngayBatDauThuePhong}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Mức phí thuê:</p>
-                <p className="font-medium">{studentData.mucPhiThue}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Ngày hết hạn:</p>
-                <p className="font-medium">{studentData.ngayHetHan}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">Trạng thái hợp đồng:</p>
-                <p className="font-medium">{studentData.trangThaiHopDong}</p>
-              </div>
+              <InfoItem label="Mã phòng" value={studentData.maPhong} />
+              <InfoItem label="Lớp" value={studentData.lop} />
+              <InfoItem label="Khóa học" value={studentData.khoaHoc} />
+              <InfoItem label="Ngành" value={studentData.nganh} />
+              <InfoItem label="Chuyên ngành" value={studentData.chuyenNganh} />
+              <InfoItem label="Ngành" value={studentData.nganh} />
+              <InfoItem label="Bậc đào tạo" value={studentData.bacDaoTao} />
+              <InfoItem label="Loại hình đào tạo" value={studentData.loaiHinhDaoTao} />
+              <InfoItem label="Phòng" value={studentData.phong} />
+              <InfoItem label="Ngày bắt đầu thuê phòng" value={studentData.ngayBatDauThuePhong} />
+              <InfoItem label="Mức phí thuê" value={studentData.mucPhiThue} />
+              <InfoItem label="Ngày hết hạn" value={studentData.ngayHetHan} />
+              <InfoItem label="Trạng thái hợp đồng" value={studentData.trangThaiHopDong} />
             </div>
           </div>
         </div>
@@ -170,67 +95,36 @@ function PersonalInfo() {
       <h2 className="text-2xl font-bold mb-6">Quan hệ gia đình</h2>
 
       <div className="bg-gray-100 rounded-xl p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Họ tên cha:</p>
-              <p className="font-medium">{familyData.father.hoTen}</p>
-            </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Quốc tịch:</p>
-              <p className="font-medium">{familyData.father.quocTich}</p>
-            </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Họ tên mẹ:</p>
-              <p className="font-medium">{familyData.mother.hoTen}</p>
-            </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Quốc tịch:</p>
-              <p className="font-medium">{familyData.mother.quocTich}</p>
-            </div>
+            <InfoItem label="Họ tên cha" value={familyData.father.hoTen} />
+            <InfoItem label="Quốc tịch" value={familyData.father.quocTich} />
+            <InfoItem label="Họ tên mẹ" value={familyData.mother.hoTen} />
+            <InfoItem label="Quốc tịch" value={familyData.mother.quocTich} />
           </div>
           <div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Năm sinh:</p>
-              <p className="font-medium">{familyData.father.namSinh}</p>
-            </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Dân tộc:</p>
-              <p className="font-medium">{familyData.father.danToc}</p>
-            </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Năm sinh:</p>
-              <p className="font-medium">{familyData.mother.namSinh}</p>
-            </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Dân tộc:</p>
-              <p className="font-medium">{familyData.mother.danToc}</p>
-            </div>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-          <div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Nghề nghiệp:</p>
-              <p className="font-medium">{familyData.father.ngheNghiep}</p>
-            </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">Nghề nghiệp:</p>
-              <p className="font-medium">{familyData.mother.ngheNghiep}</p>
-            </div>
+            <InfoItem label="Năm sinh" value={familyData.father.namSinh} />
+            <InfoItem label="Dân tộc" value={familyData.father.danToc} />
+            <InfoItem label="Năm sinh" value={familyData.mother.namSinh} />
+            <InfoItem label="Dân tộc" value={familyData.mother.danToc} />
           </div>
           <div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">SĐT:</p>
-              <p className="font-medium">{familyData.father.sdt}</p>
-            </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-500">SĐT:</p>
-              <p className="font-medium">{familyData.mother.sdt}</p>
-            </div>
+            <InfoItem label="Nghề nghiệp" value={familyData.father.ngheNghiep} />
+            <InfoItem label="SĐT" value={familyData.father.sdt} />
+            <InfoItem label="Nghề nghiệp" value={familyData.mother.ngheNghiep} />
+            <InfoItem label="SĐT" value={familyData.mother.sdt} />
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function InfoItem({ label, value }) {
+  return (
+    <div className="mb-4">
+      <p className="text-sm text-gray-500">{label}:</p>
+      <p className="font-medium">{value}</p>
     </div>
   )
 }
