@@ -12,31 +12,37 @@ const items = [
   {
     label: "Trang chủ",
     icon: <HomePage className="w-[20px] h-[20px]" alt="HomepageLogo" />,
-    active: true,
+    path: "/dashboard",
   },
   {
     label: "Quản lý sinh viên",
     icon: <Student className="w-[20px] h-[20px]" alt="StudentLogo" />,
+    path: "/student-manager",
   },
   {
     label: "Quản lý phòng",
     icon: <Room className="w-[20px] h-[20px]" alt="RoomMNGLogo" />,
+    path: "/room-manager",
   },
   {
     label: "Quản lý hóa đơn",
     icon: <Payment className="w-[20px] h-[20px]" />,
+    path: "/invoice-manager",
   },
   {
     label: "Quản lý thông báo",
     icon: <HumanResources className="w-[20px] h-[20px]" />,
+    path: "/notification-manager",
   },
   {
     label: "Quản lý hợp đồng",
     icon: <Support className="w-[20px] h-[20px]" />,
+    path: "/contract-manager",
   },
   {
     label: "Quản lý yêu cầu",
     icon: <Request className="w-[20px] h-[20px]" />,
+    path: "/request-manager",
   },
   {
     label: "Đăng xuất",

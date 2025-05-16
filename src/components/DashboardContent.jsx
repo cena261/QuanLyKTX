@@ -12,12 +12,14 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import "../styles/DashboardContent.css";
 
 function DashboardContent() {
   const [activeTab, setActiveTab] = useState("all");
   const [studentCount, setStudentCount] = useState(0);
   const [roomOccupancy, setRoomOccupancy] = useState(0);
   const [pendingRepairCount, setPendingRepairCount] = useState(0);
+  const [contractRoomMap, setContractRoomMap] = useState({});
   const [roomStats, setRoomStats] = useState({
     P2: { current: 0, max: 0, percentage: 0 },
     P4: { current: 0, max: 0, percentage: 0 },
@@ -31,6 +33,7 @@ function DashboardContent() {
   const [showPaymentsOverlay, setShowPaymentsOverlay] = useState(false);
   const [repairRequests, setRepairRequests] = useState([]);
   const [showRepairOverlay, setShowRepairOverlay] = useState(false);
+  const [isLoadingContracts, setIsLoadingContracts] = useState(true);
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
@@ -151,6 +154,47 @@ function DashboardContent() {
         });
 
         setUpcomingPayments(upcoming);
+
+        // Fetch contracts to create a mapping between contract ID and room number
+        setIsLoadingContracts(true);
+        try {
+          const contractsResponse = await fetch(
+            "http://localhost:8080/api/contracts",
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+            }
+          );
+
+          if (contractsResponse.ok) {
+            const contractsData = await contractsResponse.json();
+            if (
+              contractsData.code === 0 &&
+              contractsData.result &&
+              contractsData.result.content
+            ) {
+              // Create a mapping between contract ID and room number
+              const contractToRoomMapping = {};
+              contractsData.result.content.forEach((contract) => {
+                contractToRoomMapping[contract.maHopDong] = contract.maPhong;
+              });
+              setContractRoomMap(contractToRoomMapping);
+            }
+          } else {
+            console.error(
+              "Failed to fetch contracts:",
+              contractsResponse.status
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching contracts:", error);
+        } finally {
+          setIsLoadingContracts(false);
+        }
       } catch (error) {
         setStudentCount(0);
         setRoomOccupancy(0);
@@ -589,17 +633,6 @@ function DashboardContent() {
               </div>
             </div>
           </div>
-
-          <style jsx>{`
-            @keyframes slideIn {
-              from {
-                transform: translateX(-100%);
-              }
-              to {
-                transform: translateX(0);
-              }
-            }
-          `}</style>
         </div>
 
         {/* Recent Activities */}
@@ -708,7 +741,11 @@ function DashboardContent() {
                     </div>
                     <div>
                       <div className="text-sm font-medium">
-                        Phòng {payment.maPhong}
+                        Phòng{" "}
+                        {isLoadingContracts
+                          ? "Đang tải..."
+                          : contractRoomMap[payment.maHopDong] ||
+                            "Đang cập nhật"}
                       </div>
                       <div className="text-xs text-gray-500">
                         Đến hạn:{" "}
@@ -791,11 +828,11 @@ function DashboardContent() {
       {/* Payments Overlay */}
       {showPaymentsOverlay && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-50 flex items-center justify-center transition-all duration-300 ease-in-out"
+          className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-50 flex items-center justify-center transition-all duration-300 ease-in-out overlay-enter"
           onClick={() => setShowPaymentsOverlay(false)}
         >
           <div
-            className="bg-white rounded-lg w-[90%] max-w-2xl max-h-[80vh] flex flex-col shadow-xl transform transition-all duration-300 ease-in-out scale-100"
+            className="bg-white rounded-lg w-[90%] max-w-2xl max-h-[80vh] flex flex-col shadow-xl transform transition-all duration-300 ease-in-out scale-100 modal-enter"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 border-b flex justify-between items-center">
@@ -823,7 +860,11 @@ function DashboardContent() {
                         </div>
                         <div>
                           <div className="text-sm font-medium">
-                            Phòng {payment.maPhong}
+                            Phòng{" "}
+                            {isLoadingContracts
+                              ? "Đang tải..."
+                              : contractRoomMap[payment.maHopDong] ||
+                                "Đang cập nhật"}
                           </div>
                           <div className="text-xs text-gray-500">
                             Đến hạn:{" "}
@@ -852,11 +893,11 @@ function DashboardContent() {
       {/* Repair Requests Overlay */}
       {showRepairOverlay && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-50 flex items-center justify-center transition-all duration-300 ease-in-out"
+          className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-50 flex items-center justify-center transition-all duration-300 ease-in-out overlay-enter"
           onClick={() => setShowRepairOverlay(false)}
         >
           <div
-            className="bg-white rounded-lg w-[90%] max-w-2xl max-h-[80vh] flex flex-col shadow-xl transform transition-all duration-300 ease-in-out scale-100"
+            className="bg-white rounded-lg w-[90%] max-w-2xl max-h-[80vh] flex flex-col shadow-xl transform transition-all duration-300 ease-in-out scale-100 modal-enter"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 border-b flex justify-between items-center">
@@ -908,45 +949,6 @@ function DashboardContent() {
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes slideIn {
-          from {
-            transform: translateX(-100%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes scaleIn {
-          from {
-            transform: scale(0.95);
-            opacity: 0;
-          }
-          to {
-            transform: scale(1);
-            opacity: 1;
-          }
-        }
-
-        .overlay-enter {
-          animation: fadeIn 0.3s ease-out;
-        }
-
-        .modal-enter {
-          animation: scaleIn 0.3s ease-out;
-        }
-      `}</style>
     </div>
   );
 }
