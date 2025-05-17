@@ -17,20 +17,17 @@ const ContractList = ({
   const [endingContract, setEndingContract] = useState(null);
   const itemsPerPage = 5;
 
-  // Calculate pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentContracts = contracts.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(contracts.length / itemsPerPage);
 
-  // Status badge color mapping
   const statusColors = {
     DangHieuLuc: "bg-green-100 text-green-800",
     HetHan: "bg-gray-100 text-gray-800",
     DaHuy: "bg-red-100 text-red-800",
   };
 
-  // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -38,7 +35,6 @@ const ContractList = ({
     }).format(amount);
   };
 
-  // Format date
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("vi-VN");
   };

@@ -19,7 +19,7 @@ import {
 function ContractManager() {
   const { isAdmin, logout } = useAuth();
   const navigate = useNavigate();
-  const [view, setView] = useState("list"); // list, add, edit, details
+  const [view, setView] = useState("list");
   const [contracts, setContracts] = useState([]);
   const [selectedContract, setSelectedContract] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -43,7 +43,6 @@ function ContractManager() {
     }
   }, [isAdmin, logout, navigate]);
 
-  // Fetch contracts data
   useEffect(() => {
     const fetchContracts = async () => {
       try {
@@ -51,7 +50,6 @@ function ContractManager() {
         const userData = localStorage.getItem("user");
 
         if (!userData) {
-          console.log("No user data found");
           logout();
           navigate("/login");
           return;
@@ -60,7 +58,6 @@ function ContractManager() {
         const { access_token, isAdmin } = JSON.parse(userData);
 
         if (!access_token || !isAdmin) {
-          console.log("No token or not admin:", { access_token, isAdmin });
           logout();
           navigate("/login");
           return;
@@ -75,7 +72,6 @@ function ContractManager() {
         });
 
         if (response.status === 401) {
-          console.log("Token expired or invalid");
           localStorage.removeItem("user");
           logout();
           navigate("/login");
@@ -87,9 +83,7 @@ function ContractManager() {
         }
 
         const data = await response.json();
-        console.log("API Response:", data);
 
-        // Kiểm tra cấu trúc response và lấy danh sách hợp đồng từ content
         if (
           data &&
           data.result &&
@@ -105,7 +99,6 @@ function ContractManager() {
           throw new Error("Invalid response format");
         }
       } catch (err) {
-        console.error("Error fetching contracts:", err);
         setError("Không thể tải danh sách hợp đồng. Vui lòng thử lại sau.");
       } finally {
         setIsLoading(false);
@@ -135,7 +128,6 @@ function ContractManager() {
 
       const data = await response.json();
       if (data.code === 0) {
-        // Refresh contract list
         const updatedResponse = await fetch(
           "http://localhost:8080/api/contracts",
           {
@@ -162,7 +154,6 @@ function ContractManager() {
         throw new Error(data.message || "Failed to create contract");
       }
     } catch (error) {
-      console.error("Error creating contract:", error);
       setShowErrorNotification(true);
       setTimeout(() => setShowErrorNotification(false), 3000);
     }
@@ -191,7 +182,6 @@ function ContractManager() {
 
       const data = await response.json();
       if (data.code === 0) {
-        // Refresh contract list
         const updatedResponse = await fetch(
           "http://localhost:8080/api/contracts",
           {
@@ -218,7 +208,6 @@ function ContractManager() {
         throw new Error(data.message || "Failed to update contract");
       }
     } catch (error) {
-      console.error("Error updating contract:", error);
       setShowErrorNotification(true);
       setTimeout(() => setShowErrorNotification(false), 3000);
     }
@@ -250,7 +239,6 @@ function ContractManager() {
 
       const data = await response.json();
       if (data.code === 0) {
-        // Refresh contract list
         const updatedResponse = await fetch(
           "http://localhost:8080/api/contracts",
           {
@@ -276,7 +264,6 @@ function ContractManager() {
         throw new Error(data.message || "Failed to end contract");
       }
     } catch (error) {
-      console.error("Error ending contract:", error);
       setShowErrorNotification(true);
       setTimeout(() => setShowErrorNotification(false), 3000);
     }
@@ -309,7 +296,6 @@ function ContractManager() {
         throw new Error("Failed to delete contract");
       }
 
-      // Refresh contract list
       const updatedResponse = await fetch(
         "http://localhost:8080/api/contracts",
         {
@@ -330,7 +316,6 @@ function ContractManager() {
       setShowDeleteSuccessNotification(true);
       setTimeout(() => setShowDeleteSuccessNotification(false), 3000);
     } catch (error) {
-      console.error("Error deleting contract:", error);
       setShowDeleteErrorNotification(true);
       setTimeout(() => setShowDeleteErrorNotification(false), 3000);
     } finally {

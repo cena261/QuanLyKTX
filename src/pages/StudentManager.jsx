@@ -83,7 +83,6 @@ function StudentManager() {
     }
   }, [isAdmin, logout, navigate]);
 
-  // Hàm chuyển đổi trạng thái
   const getStatusDisplay = (status) => {
     switch (status) {
       case "DangO":
@@ -95,7 +94,6 @@ function StudentManager() {
     }
   };
 
-  // Hàm chuyển đổi trạng thái ngược lại
   const getStatusValue = (displayStatus) => {
     switch (displayStatus) {
       case "Đang ở":
@@ -107,13 +105,11 @@ function StudentManager() {
     }
   };
 
-  // Hàm format ngày tháng
   const formatDate = (dateString) => {
     if (!dateString) return "";
     return dateString.split("T")[0];
   };
 
-  // Fetch students data
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -121,7 +117,6 @@ function StudentManager() {
         const userData = localStorage.getItem("user");
 
         if (!userData) {
-          console.log("No user data found");
           logout();
           navigate("/login");
           return;
@@ -130,7 +125,6 @@ function StudentManager() {
         const { access_token, isAdmin } = JSON.parse(userData);
 
         if (!access_token || !isAdmin) {
-          console.log("No token or not admin:", { access_token, isAdmin });
           logout();
           navigate("/login");
           return;
@@ -148,7 +142,6 @@ function StudentManager() {
         );
 
         if (response.status === 401) {
-          console.log("Token expired or invalid");
           localStorage.removeItem("user");
           logout();
           navigate("/login");
@@ -160,9 +153,7 @@ function StudentManager() {
         }
 
         const data = await response.json();
-        console.log("API Response:", data);
 
-        // Kiểm tra cấu trúc response và lọc các giá trị null
         if (data && data.result && Array.isArray(data.result)) {
           const validStudents = data.result.filter(
             (student) => student !== null
@@ -173,7 +164,6 @@ function StudentManager() {
           throw new Error("Invalid response format");
         }
       } catch (err) {
-        console.error("Error fetching students:", err);
         setError("Không thể tải danh sách sinh viên. Vui lòng thử lại sau.");
       } finally {
         setIsLoading(false);
@@ -183,7 +173,6 @@ function StudentManager() {
     fetchStudents();
   }, [logout, navigate]);
 
-  // Lọc sinh viên theo tìm kiếm và trạng thái
   const filteredStudents = students.filter((student) => {
     if (!student) return false;
 
@@ -199,7 +188,6 @@ function StudentManager() {
     return matchesSearch && matchesFilter;
   });
 
-  // Phân trang
   const indexOfLastStudent = currentPage * studentsPerPage;
   const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
   const currentStudents = filteredStudents.slice(
@@ -208,7 +196,6 @@ function StudentManager() {
   );
   const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
-  // Validate form
   const validateForm = () => {
     const newErrors = {};
 
@@ -255,7 +242,6 @@ function StudentManager() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -271,7 +257,7 @@ function StudentManager() {
       const studentData = {
         ...newStudent,
         taiKhoan: newStudent.maSV,
-        matKhau: "huit@140ltt", // Mật khẩu mặc định
+        matKhau: "huit@140ltt",
         trangThaiTaiKhoan: "KichHoat",
       };
 
@@ -291,7 +277,6 @@ function StudentManager() {
         throw new Error("Failed to create student");
       }
 
-      // Refresh student list
       const updatedResponse = await fetch(
         "http://localhost:8080/api/student-accounts",
         {
@@ -321,27 +306,23 @@ function StudentManager() {
         cccd: "",
       });
 
-      // Show success notification
       setShowSuccessNotification(true);
       setTimeout(() => {
         setShowSuccessNotification(false);
       }, 3000);
     } catch (error) {
-      console.error("Error creating student:", error);
       setErrors({ submit: "Không thể tạo sinh viên. Vui lòng thử lại sau." });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewStudent((prev) => ({
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -350,21 +331,18 @@ function StudentManager() {
     }
   };
 
-  // Xử lý thêm sinh viên mới
   const handleAddStudent = () => {
     setShowAddStudentOverlay(true);
   };
 
-  // Xử lý chỉnh sửa sinh viên
   const handleEditStudent = (student) => {
     setEditingStudent({
       ...student,
-      matKhau: "", // Không hiển thị mật khẩu cũ
+      matKhau: "",
     });
     setShowEditStudentOverlay(true);
   };
 
-  // Validate form chỉnh sửa
   const validateEditForm = () => {
     const newErrors = {};
 
@@ -397,7 +375,6 @@ function StudentManager() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle edit form submission
   const handleEditSubmit = async (e) => {
     e.preventDefault();
 
@@ -410,10 +387,9 @@ function StudentManager() {
       const userData = JSON.parse(localStorage.getItem("user"));
       const token = userData?.access_token;
 
-      // Nếu không nhập mật khẩu mới thì giữ nguyên mật khẩu cũ
       const studentData = {
         ...editingStudent,
-        matKhau: editingStudent.matKhau || undefined, // Chỉ gửi mật khẩu nếu có thay đổi
+        matKhau: editingStudent.matKhau || undefined,
       };
 
       const response = await fetch(
@@ -432,7 +408,6 @@ function StudentManager() {
         throw new Error("Failed to update student");
       }
 
-      // Refresh student list
       const updatedResponse = await fetch(
         "http://localhost:8080/api/student-accounts",
         {
@@ -449,13 +424,11 @@ function StudentManager() {
       setShowEditStudentOverlay(false);
       setEditingStudent(null);
 
-      // Show success notification
       setShowEditSuccessNotification(true);
       setTimeout(() => {
         setShowEditSuccessNotification(false);
       }, 3000);
     } catch (error) {
-      console.error("Error updating student:", error);
       setEditErrors({
         submit: "Không thể cập nhật thông tin sinh viên. Vui lòng thử lại sau.",
       });
@@ -468,14 +441,12 @@ function StudentManager() {
     }
   };
 
-  // Handle edit input change
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
     setEditingStudent((prev) => ({
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (editErrors[name]) {
       setEditErrors((prev) => ({
         ...prev,
@@ -484,13 +455,11 @@ function StudentManager() {
     }
   };
 
-  // Xử lý xóa sinh viên
   const handleDeleteStudent = (student) => {
     setDeletingStudent(student);
     setShowDeleteConfirm(true);
   };
 
-  // Xử lý xác nhận xóa
   const handleConfirmDelete = async () => {
     if (!deletingStudent) return;
 
@@ -513,7 +482,6 @@ function StudentManager() {
         throw new Error("Failed to delete student");
       }
 
-      // Refresh student list
       const updatedResponse = await fetch(
         "http://localhost:8080/api/student-accounts",
         {
@@ -530,13 +498,11 @@ function StudentManager() {
       setShowDeleteConfirm(false);
       setDeletingStudent(null);
 
-      // Show success notification
       setShowDeleteSuccessNotification(true);
       setTimeout(() => {
         setShowDeleteSuccessNotification(false);
       }, 3000);
     } catch (error) {
-      console.error("Error deleting student:", error);
       setShowDeleteErrorNotification(true);
       setTimeout(() => {
         setShowDeleteErrorNotification(false);

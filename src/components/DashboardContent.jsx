@@ -49,7 +49,6 @@ function DashboardContent() {
           return;
         }
 
-        // Fetch students
         const studentsResponse = await fetch(
           "http://localhost:8080/api/student-accounts",
           {
@@ -69,7 +68,6 @@ function DashboardContent() {
           }
         }
 
-        // Fetch rooms
         const roomsResponse = await fetch("http://localhost:8080/api/rooms", {
           method: "GET",
           headers: {
@@ -87,7 +85,6 @@ function DashboardContent() {
           }
         }
 
-        // Fetch repair requests
         const fetchRepairRequests = async (status) => {
           const response = await fetch(
             `http://localhost:8080/api/repair-requests/paged?page=0&size=20&trangThai=${status}`,
@@ -109,16 +106,13 @@ function DashboardContent() {
           return [];
         };
 
-        // Fetch both pending and in-progress requests
         const pendingRequests = await fetchRepairRequests("DangCho");
         const inProgressRequests = await fetchRepairRequests("DangXuLy");
 
-        // Combine both lists
         const allRequests = [...pendingRequests, ...inProgressRequests];
         setRepairRequests(allRequests);
         setPendingRepairCount(allRequests.length);
 
-        // Fetch upcoming payments
         const fetchPayments = async () => {
           const response = await fetch(
             `http://localhost:8080/api/invoices?page=0&size=20&trangThai=ChuaThanhToan`,
@@ -140,10 +134,8 @@ function DashboardContent() {
           return [];
         };
 
-        // Fetch unpaid payments
         const unpaidPayments = await fetchPayments();
 
-        // Filter payments due in next 7 days
         const today = new Date();
         const sevenDaysLater = new Date(today);
         sevenDaysLater.setDate(today.getDate() + 7);
@@ -155,7 +147,6 @@ function DashboardContent() {
 
         setUpcomingPayments(upcoming);
 
-        // Fetch contracts to create a mapping between contract ID and room number
         setIsLoadingContracts(true);
         try {
           const contractsResponse = await fetch(
@@ -177,7 +168,6 @@ function DashboardContent() {
               contractsData.result &&
               contractsData.result.content
             ) {
-              // Create a mapping between contract ID and room number
               const contractToRoomMapping = {};
               contractsData.result.content.forEach((contract) => {
                 contractToRoomMapping[contract.maHopDong] = contract.maPhong;
@@ -242,7 +232,6 @@ function DashboardContent() {
       totalMaxOccupants += maxOccupants;
     });
 
-    // Calculate percentages
     Object.keys(stats).forEach((key) => {
       if (stats[key].max > 0) {
         stats[key].percentage = Math.round(
@@ -258,7 +247,6 @@ function DashboardContent() {
     setRoomOccupancy(parseFloat(occupancyPercentage));
   };
 
-  // Filter rooms by area
   const getFilteredRoomStats = () => {
     if (activeTab === "all") {
       return roomStats;
@@ -284,7 +272,6 @@ function DashboardContent() {
       }
     });
 
-    // Calculate percentages for filtered rooms
     Object.keys(filteredStats).forEach((key) => {
       if (filteredStats[key].max > 0) {
         filteredStats[key].percentage = Math.round(

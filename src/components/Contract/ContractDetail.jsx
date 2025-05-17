@@ -3,21 +3,18 @@
 const ContractDetails = ({ contract, onEdit, onBack }) => {
   if (!contract) return null;
 
-  // Status badge color mapping
   const statusColors = {
     active: "bg-green-100 text-green-800",
     expired: "bg-gray-100 text-gray-800",
     terminated: "bg-red-100 text-red-800",
   };
 
-  // Payment status badge color mapping
   const paymentStatusColors = {
     paid: "bg-green-100 text-green-800",
     partial: "bg-yellow-100 text-yellow-800",
     unpaid: "bg-red-100 text-red-800",
   };
 
-  // Format date
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("vi-VN");
   };

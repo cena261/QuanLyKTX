@@ -30,7 +30,6 @@ const ContractManager = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [contractToDelete, setContractToDelete] = useState(null);
 
-  // Fetch contracts from API
   const fetchContracts = async () => {
     try {
       setLoading(true);

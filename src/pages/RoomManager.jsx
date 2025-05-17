@@ -44,19 +44,14 @@ function RoomManager() {
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
 
-  // Dữ liệu mẫu tòa nhà
   const buildings = ["Tòa A", "Tòa B"];
 
-  // State cho danh sách phòng
   const [rooms, setRooms] = useState([]);
 
-  // State cho danh sách sinh viên trong phòng
   const [studentsInRoom, setStudentsInRoom] = useState([]);
 
-  // State cho danh sách sinh viên có thể thêm vào phòng
   const [availableStudents, setAvailableStudents] = useState([]);
 
-  // Form state cho thêm/sửa phòng
   const [roomForm, setRoomForm] = useState({
     maPhong: "",
     maKhu: "A",
@@ -69,26 +64,21 @@ function RoomManager() {
     soNguoiHienTai: 0,
   });
 
-  // Form state cho tìm kiếm sinh viên
   const [studentSearchTerm, setStudentSearchTerm] = useState("");
 
-  // State cho modal xác nhận xóa
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingRoom, setDeletingRoom] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Hàm lấy sức chứa từ mã loại phòng
   const getCapacityFromRoomType = (maLoaiPhong) => {
     const match = maLoaiPhong.match(/P(\d+)/);
     return match ? parseInt(match[1]) : 0;
   };
 
-  // Hàm lấy tên tòa nhà từ mã khu
   const getBuildingName = (maKhu) => {
     return `Tòa ${maKhu}`;
   };
 
-  // Hàm định dạng số tiền
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -96,7 +86,6 @@ function RoomManager() {
     }).format(amount);
   };
 
-  // Hàm lấy màu cho trạng thái phòng
   const getRoomStatusColor = (status) => {
     switch (status) {
       case "Trong":
@@ -123,7 +112,6 @@ function RoomManager() {
     fetchRooms();
   }, []);
 
-  // Fetch rooms data
   const fetchRooms = async () => {
     try {
       setIsLoading(true);
@@ -166,7 +154,6 @@ function RoomManager() {
     }
   };
 
-  // Fetch students in room
   const fetchStudentsInRoom = async (maPhong) => {
     try {
       const userData = JSON.parse(localStorage.getItem("user"));
@@ -200,7 +187,6 @@ function RoomManager() {
     }
   };
 
-  // Fetch available students (students without room)
   const fetchAvailableStudents = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("user"));
@@ -221,7 +207,6 @@ function RoomManager() {
 
       const data = await response.json();
       if (data.code === 0 && data.result) {
-        // Lọc ra những sinh viên chưa có phòng
         const studentsWithoutRoom = data.result.filter(
           (student) => !student.maPhong
         );
@@ -238,7 +223,6 @@ function RoomManager() {
     }
   };
 
-  // Sắp xếp dữ liệu
   const sortedRooms = [...rooms];
   if (sortConfig.key) {
     sortedRooms.sort((a, b) => {
@@ -252,7 +236,6 @@ function RoomManager() {
     });
   }
 
-  // Lọc phòng theo tìm kiếm và trạng thái
   const filteredRooms = sortedRooms.filter((room) => {
     const matchesSearch = room.maPhong
       .toLowerCase()
@@ -268,27 +251,23 @@ function RoomManager() {
     return matchesSearch && matchesStatus && matchesBuilding;
   });
 
-  // Phân trang
   const indexOfLastRoom = currentPage * roomsPerPage;
   const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
   const currentRooms = filteredRooms.slice(indexOfFirstRoom, indexOfLastRoom);
   const totalPages = Math.ceil(filteredRooms.length / roomsPerPage);
 
-  // Lọc sinh viên có thể thêm vào phòng
   const filteredAvailableStudents = availableStudents.filter(
     (student) =>
       student.hoTen.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
       student.maSV.toLowerCase().includes(studentSearchTerm.toLowerCase())
   );
 
-  // Lọc sinh viên trong phòng
   const filteredStudentsInRoom = studentsInRoom.filter(
     (student) =>
       student.hoTen.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
       student.maSV.toLowerCase().includes(studentSearchTerm.toLowerCase())
   );
 
-  // Xử lý thêm phòng mới
   const handleAddRoom = () => {
     setRoomForm({
       maPhong: "",
@@ -304,7 +283,6 @@ function RoomManager() {
     setShowAddRoomModal(true);
   };
 
-  // Hàm xử lý thay đổi mã phòng
   const handleMaPhongChange = (e) => {
     const maPhong = e.target.value;
     const tang = maPhong.length >= 2 ? parseInt(maPhong[1]) : 1;
@@ -315,7 +293,6 @@ function RoomManager() {
     }));
   };
 
-  // Xử lý lưu phòng (thêm mới hoặc cập nhật)
   const handleSaveRoom = async (e) => {
     e.preventDefault();
     try {
@@ -326,7 +303,6 @@ function RoomManager() {
         throw new Error("No token found");
       }
 
-      // Kiểm tra nếu đang cập nhật phòng và có thay đổi loại phòng
       if (roomForm.id) {
         const currentRoom = rooms.find(
           (room) => room.maPhong === roomForm.maPhong
@@ -346,11 +322,10 @@ function RoomManager() {
         ? `http://localhost:8080/api/rooms/${roomForm.maPhong}`
         : "http://localhost:8080/api/rooms";
 
-      // Chuẩn bị dữ liệu gửi lên server
       const roomData = {
         maPhong: roomForm.maPhong,
         tang: roomForm.tang,
-        soNguoiHienTai: roomForm.id ? roomForm.soNguoiHienTai : 0, // Giữ nguyên số lượng sinh viên nếu đang cập nhật
+        soNguoiHienTai: roomForm.id ? roomForm.soNguoiHienTai : 0,
         trangThai: roomForm.trangThai,
         giaPhong: roomForm.giaPhong,
         dienTich: roomForm.dienTich,
@@ -381,7 +356,6 @@ function RoomManager() {
 
       const data = await response.json();
       if (data.code === 0) {
-        // Refresh room list
         await fetchRooms();
         setShowAddRoomModal(false);
         setShowSuccessNotification(true);
@@ -413,18 +387,15 @@ function RoomManager() {
     }
   };
 
-  // Xử lý xóa phòng
   const handleDeleteRoom = (room) => {
     setDeletingRoom(room);
     setShowDeleteConfirm(true);
   };
 
-  // Xử lý xác nhận xóa
   const handleConfirmDelete = async () => {
     if (!deletingRoom) return;
 
     try {
-      // Kiểm tra phòng có sinh viên không
       if (deletingRoom.soNguoiHienTai > 0) {
         throw new Error("Không thể xóa phòng đang có sinh viên ở");
       }
@@ -448,7 +419,6 @@ function RoomManager() {
         throw new Error(errorData.message || "Lỗi không xác định");
       }
 
-      // Refresh danh sách phòng
       await fetchRooms();
 
       setShowDeleteConfirm(false);
@@ -475,7 +445,6 @@ function RoomManager() {
     }
   };
 
-  // Kiểm tra và cập nhật trạng thái phòng tự động
   const updateRoomStatusAutomatically = (room) => {
     const capacity = getCapacityFromRoomType(room.maLoaiPhong);
     let newStatus = room.trangThai;
@@ -493,7 +462,6 @@ function RoomManager() {
     }
   };
 
-  // Cập nhật useEffect để tự động cập nhật trạng thái phòng
   useEffect(() => {
     if (rooms.length > 0) {
       rooms.forEach((room) => {
@@ -502,7 +470,6 @@ function RoomManager() {
     }
   }, [rooms]);
 
-  // Xử lý cập nhật trạng thái phòng
   const handleUpdateRoomStatus = async (maPhong, newStatus) => {
     try {
       const userData = JSON.parse(localStorage.getItem("user"));
@@ -524,7 +491,6 @@ function RoomManager() {
         throw new Error(errorData.message || "Lỗi không xác định");
       }
 
-      // Refresh danh sách phòng
       await fetchRooms();
 
       setShowSuccessNotification(true);
@@ -546,22 +512,19 @@ function RoomManager() {
     }
   };
 
-  // Xử lý chỉnh sửa phòng
   const handleEditRoom = (room) => {
     setRoomForm({
       ...room,
-      id: room.maPhong, // Thêm id để phân biệt giữa thêm mới và chỉnh sửa
+      id: room.maPhong,
     });
     setShowAddRoomModal(true);
   };
 
-  // Xử lý thêm sinh viên vào phòng
   const handleAddStudentToRoom = async (student) => {
     try {
       const userData = JSON.parse(localStorage.getItem("user"));
       const token = userData?.access_token;
 
-      // Kiểm tra điều kiện trước khi thêm
       if (
         currentRoom.soNguoiHienTai >=
         getCapacityFromRoomType(currentRoom.maLoaiPhong)
@@ -589,11 +552,8 @@ function RoomManager() {
         throw new Error(errorData.message || "Lỗi không xác định");
       }
 
-      // Refresh danh sách sinh viên trong phòng
       await fetchStudentsInRoom(currentRoom.maPhong);
-      // Refresh danh sách sinh viên có thể thêm
       await fetchAvailableStudents();
-      // Refresh danh sách phòng
       await fetchRooms();
 
       setShowSuccessNotification(true);
@@ -615,7 +575,6 @@ function RoomManager() {
     }
   };
 
-  // Xử lý xóa sinh viên khỏi phòng
   const handleRemoveStudentFromRoom = async (student) => {
     try {
       const userData = JSON.parse(localStorage.getItem("user"));
@@ -637,11 +596,8 @@ function RoomManager() {
         throw new Error(errorData.message || "Lỗi không xác định");
       }
 
-      // Refresh danh sách sinh viên trong phòng
       await fetchStudentsInRoom(currentRoom.maPhong);
-      // Refresh danh sách sinh viên có thể thêm
       await fetchAvailableStudents();
-      // Refresh danh sách phòng
       await fetchRooms();
 
       setShowSuccessNotification(true);
@@ -663,18 +619,15 @@ function RoomManager() {
     }
   };
 
-  // Xử lý quản lý sinh viên trong phòng
   const handleManageStudents = async (room) => {
     setCurrentRoom(room);
     setShowManageStudentsModal(true);
-    // Fetch danh sách sinh viên trong phòng và sinh viên có thể thêm
     await Promise.all([
       fetchStudentsInRoom(room.maPhong),
       fetchAvailableStudents(),
     ]);
   };
 
-  // Hàm sắp xếp
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {

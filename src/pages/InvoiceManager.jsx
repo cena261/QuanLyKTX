@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import ManagerLayout from "../components/Layout/ManagerLayout.jsx";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 import {
   Search,
   Filter,
@@ -15,78 +16,9 @@ import {
   MoreHorizontal,
   Download,
   Printer,
-  Eye,
+  X,
+  Loader,
 } from "lucide-react";
-
-// Mock service - replace with your actual API service
-const invoiceService = {
-  getInvoices: async (params) => {
-    // Simulate API call
-    console.log("Fetching invoices with params:", params);
-    return {
-      content: [
-        {
-          id: 1,
-          invoiceNumber: "INV-2023-001",
-          studentName: "Nguyễn Văn A",
-          roomNumber: "A101",
-          amount: 1500000,
-          status: "PAID",
-          dueDate: "2023-05-15",
-          createdDate: "2023-05-01",
-        },
-        {
-          id: 2,
-          invoiceNumber: "INV-2023-002",
-          studentName: "Trần Thị B",
-          roomNumber: "B205",
-          amount: 1500000,
-          status: "PENDING",
-          dueDate: "2023-05-15",
-          createdDate: "2023-05-01",
-        },
-        {
-          id: 3,
-          invoiceNumber: "INV-2023-003",
-          studentName: "Lê Văn C",
-          roomNumber: "C310",
-          amount: 1500000,
-          status: "OVERDUE",
-          dueDate: "2023-04-15",
-          createdDate: "2023-04-01",
-        },
-        {
-          id: 4,
-          invoiceNumber: "INV-2023-004",
-          studentName: "Phạm Thị D",
-          roomNumber: "A102",
-          amount: 1500000,
-          status: "PAID",
-          dueDate: "2023-05-15",
-          createdDate: "2023-05-01",
-        },
-        {
-          id: 5,
-          invoiceNumber: "INV-2023-005",
-          studentName: "Hoàng Văn E",
-          roomNumber: "B210",
-          amount: 1500000,
-          status: "PENDING",
-          dueDate: "2023-05-15",
-          createdDate: "2023-05-01",
-        },
-      ],
-      totalElements: 25,
-      totalPages: 5,
-      size: 5,
-      number: 0,
-    };
-  },
-  updateInvoiceStatus: async (id, status) => {
-    console.log(`Updating invoice ${id} status to ${status}`);
-    return { success: true };
-  },
-};
 
 function InvoiceManager() {
   const { isAdmin, logout } = useAuth();
@@ -98,13 +30,31 @@ function InvoiceManager() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [studentIdMap, setStudentIdMap] = useState(new Map());
 
-  // Pagination state
+  const [maQL, setMaQL] = useState("");
+
+  const [showCreateInvoiceModal, setShowCreateInvoiceModal] = useState(false);
+  const [contracts, setContracts] = useState([]);
+  const [isLoadingContracts, setIsLoadingContracts] = useState(false);
+  const [newInvoice, setNewInvoice] = useState({
+    loaiHoaDon: "TienPhong",
+    ngayLap: new Date().toISOString().split("T")[0],
+    kyThanhToan: "",
+    soTien: "",
+    hanThanhToan: "",
+    maHopDong: "",
+  });
+  const [invoiceErrors, setInvoiceErrors] = useState({});
+  const [isSubmittingInvoice, setIsSubmittingInvoice] = useState(false);
+  const [showCreateSuccessNotification, setShowCreateSuccessNotification] =
+    useState(false);
+  const [showCreateErrorNotification, setShowCreateErrorNotification] =
+    useState(false);
+
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  // Filter and sort state
   const [filters, setFilters] = useState({
     status: "",
     searchTerm: "",
@@ -113,22 +63,48 @@ function InvoiceManager() {
   const [sortDirection, setSortDirection] = useState("desc");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-  // Notification state
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [isActionLoading, setIsActionLoading] = useState(false);
 
-  // Add debounce effect for search
+  const [loadingActionId, setLoadingActionId] = useState(null);
+
+  useEffect(() => {
+    const fetchMaQL = async () => {
+      try {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        const token = userData?.access_token;
+        const username = userData?.username;
+        if (!token || !username) return;
+        const response = await fetch(
+          "http://localhost:8080/api/admin-accounts",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data && data.result && Array.isArray(data.result)) {
+          const admin = data.result.find((acc) => acc.taiKhoan === username);
+          if (admin && admin.maQL) setMaQL(admin.maQL);
+        }
+      } catch (err) {}
+    };
+    fetchMaQL();
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(filters.searchTerm);
-    }, 500); // 500ms delay
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [filters.searchTerm]);
 
-  // Memoize fetchInvoices function with useCallback
   const fetchInvoices = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -140,14 +116,11 @@ function InvoiceManager() {
         throw new Error("No token found");
       }
 
-      // Build query parameters
       const queryParams = new URLSearchParams();
 
-      // Add pagination parameters
       queryParams.append("page", page);
       queryParams.append("size", size);
 
-      // Add filter parameters if they exist
       if (filters.status) {
         queryParams.append("trangThai", filters.status);
       }
@@ -155,7 +128,6 @@ function InvoiceManager() {
         queryParams.append("search", filters.searchTerm);
       }
 
-      // Add sort parameters
       if (sortBy) {
         queryParams.append("sortBy", sortBy);
         queryParams.append("sortDirection", sortDirection);
@@ -186,7 +158,6 @@ function InvoiceManager() {
       }
 
       const data = await response.json();
-      console.log("API Response:", data);
 
       if (data.code === 0 && data.result) {
         const invoiceList = data.result.content || [];
@@ -194,7 +165,6 @@ function InvoiceManager() {
         setTotalPages(data.result.totalPages || 0);
         setTotalElements(data.result.totalElements || 0);
 
-        // Fetch student IDs after getting invoices
         await fetchStudentIds(invoiceList);
       } else {
         setInvoices([]);
@@ -224,23 +194,19 @@ function InvoiceManager() {
     navigate,
   ]);
 
-  // Separate useEffect for initial data fetch
   useEffect(() => {
     fetchInvoices();
   }, [fetchInvoices]);
 
-  // Handle search with debounce
   const handleSearchChange = (e) => {
     const searchValue = e.target.value;
 
-    // Clear any existing timeout
     if (window.searchTimeout) {
       clearTimeout(window.searchTimeout);
     }
 
-    // Set a new timeout to update the search term after 500ms
     window.searchTimeout = setTimeout(() => {
-      setPage(0); // Reset to first page when searching
+      setPage(0);
       setFilters((prev) => ({
         ...prev,
         searchTerm: searchValue,
@@ -300,7 +266,7 @@ function InvoiceManager() {
   };
 
   const handleFilterChange = (e) => {
-    setPage(0); // Reset to first page when filtering
+    setPage(0);
     setFilters({
       ...filters,
       [e.target.name]: e.target.value,
@@ -339,7 +305,6 @@ function InvoiceManager() {
         throw new Error(errorData.message || "Lỗi không xác định");
       }
 
-      // Refresh danh sách hóa đơn
       await fetchInvoices();
 
       setShowSuccessNotification(true);
@@ -426,6 +391,147 @@ function InvoiceManager() {
     return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
+  const fetchContracts = async () => {
+    setIsLoadingContracts(true);
+    try {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      const token = userData?.access_token;
+
+      const response = await fetch("http://localhost:8080/api/contracts", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch contracts");
+      }
+
+      const data = await response.json();
+      if (data.code === 0 && data.result) {
+        setContracts(data.result.content);
+      }
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+      setShowCreateErrorNotification(true);
+    } finally {
+      setIsLoadingContracts(false);
+    }
+  };
+
+  const handleCreateInvoice = () => {
+    setShowCreateInvoiceModal(true);
+    fetchContracts();
+  };
+
+  const handleInvoiceInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewInvoice((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (invoiceErrors[name]) {
+      setInvoiceErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+
+  const validateInvoiceForm = () => {
+    const newErrors = {};
+
+    if (!newInvoice.maHopDong) {
+      newErrors.maHopDong = "Vui lòng chọn hợp đồng";
+    }
+
+    if (!newInvoice.kyThanhToan) {
+      newErrors.kyThanhToan = "Vui lòng nhập kỳ thanh toán";
+    }
+
+    if (!newInvoice.soTien) {
+      newErrors.soTien = "Vui lòng nhập số tiền";
+    } else if (isNaN(newInvoice.soTien) || Number(newInvoice.soTien) <= 0) {
+      newErrors.soTien = "Số tiền không hợp lệ";
+    }
+
+    if (!newInvoice.hanThanhToan) {
+      newErrors.hanThanhToan = "Vui lòng chọn hạn thanh toán";
+    }
+
+    setInvoiceErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInvoiceSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateInvoiceForm()) {
+      return;
+    }
+
+    setIsSubmittingInvoice(true);
+    try {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      const token = userData?.access_token;
+
+      const invoiceData = {
+        ...newInvoice,
+        maQLThu: maQL,
+        soTien: Number(newInvoice.soTien),
+      };
+
+      console.log(
+        "[DEBUG] Dữ liệu gửi lên API tạo hóa đơn:",
+        JSON.stringify(invoiceData, null, 2)
+      );
+
+      const response = await fetch("http://localhost:8080/api/invoices", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(invoiceData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create invoice");
+      }
+
+      await fetchInvoices();
+
+      setShowCreateInvoiceModal(false);
+      setNewInvoice({
+        loaiHoaDon: "TienPhong",
+        ngayLap: new Date().toISOString().split("T")[0],
+        kyThanhToan: "",
+        soTien: "",
+        hanThanhToan: "",
+        maHopDong: "",
+      });
+
+      setShowCreateSuccessNotification(true);
+      setTimeout(() => {
+        setShowCreateSuccessNotification(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+      setShowCreateErrorNotification(true);
+      setTimeout(() => {
+        setShowCreateErrorNotification(false);
+      }, 3000);
+    } finally {
+      setIsSubmittingInvoice(false);
+    }
+  };
+
+  const contractOptions = contracts.map((contract) => ({
+    value: contract.maHopDong,
+    label: `${contract.maSV} - ${contract.maPhong}`,
+    maHopDong: contract.maHopDong,
+  }));
+
   return (
     <ManagerLayout>
       <div className="p-4">
@@ -449,11 +555,212 @@ function InvoiceManager() {
           <h1 className="text-2xl font-bold text-primary mb-4 md:mb-0">
             Quản lý hóa đơn
           </h1>
-          <button className="mt-2 md:mt-0 bg-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-600 cursor-pointer">
+          <button
+            onClick={handleCreateInvoice}
+            className="mt-2 md:mt-0 bg-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-600 cursor-pointer"
+          >
             <FileText className="w-4 h-4 mr-2" />
             Tạo hóa đơn mới
           </button>
         </div>
+
+        {/* Create Invoice Modal */}
+        {showCreateInvoiceModal && (
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg w-[90%] max-w-2xl max-h-[90vh] flex flex-col shadow-xl">
+              <div className="p-4 border-b flex justify-between items-center">
+                <h2 className="text-xl font-bold">Tạo hóa đơn mới</h2>
+                <button
+                  onClick={() => setShowCreateInvoiceModal(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form
+                onSubmit={handleInvoiceSubmit}
+                className="p-4 overflow-y-auto"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Loại hóa đơn <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="loaiHoaDon"
+                      value={newInvoice.loaiHoaDon}
+                      onChange={handleInvoiceInputChange}
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                    >
+                      <option value="TienPhong">Tiền phòng</option>
+                      <option value="TienDienNuoc">Tiền điện nước</option>
+                      <option value="TongHop">Tiền phòng + điện nước</option>
+                      <option value="Khac">Khác</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Hợp đồng <span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      name="maHopDong"
+                      value={
+                        contractOptions.find(
+                          (option) => option.value === newInvoice.maHopDong
+                        ) || null
+                      }
+                      onChange={(selectedOption) => {
+                        handleInvoiceInputChange({
+                          target: {
+                            name: "maHopDong",
+                            value: selectedOption ? selectedOption.value : "",
+                          },
+                        });
+                      }}
+                      options={contractOptions}
+                      isDisabled={isLoadingContracts}
+                      isLoading={isLoadingContracts}
+                      placeholder="Chọn hợp đồng..."
+                      noOptionsMessage={() => "Không tìm thấy hợp đồng"}
+                      loadingMessage={() => "Đang tải..."}
+                      isClearable
+                      isSearchable
+                      className={`${
+                        invoiceErrors.maHopDong ? "border-red-500" : ""
+                      }`}
+                      classNamePrefix="select"
+                      styles={{
+                        control: (base, state) => ({
+                          ...base,
+                          borderColor: invoiceErrors.maHopDong
+                            ? "#ef4444"
+                            : state.isFocused
+                            ? "#3b82f6"
+                            : "#d1d5db",
+                          boxShadow: state.isFocused
+                            ? "0 0 0 1px #3b82f6"
+                            : "none",
+                          "&:hover": {
+                            borderColor: invoiceErrors.maHopDong
+                              ? "#ef4444"
+                              : "#3b82f6",
+                          },
+                        }),
+                      }}
+                    />
+                    {invoiceErrors.maHopDong && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {invoiceErrors.maHopDong}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Kỳ thanh toán <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="kyThanhToan"
+                      value={newInvoice.kyThanhToan}
+                      onChange={handleInvoiceInputChange}
+                      placeholder="MM-YYYY"
+                      className={`w-full p-2 border rounded-lg ${
+                        invoiceErrors.kyThanhToan
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    {invoiceErrors.kyThanhToan && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {invoiceErrors.kyThanhToan}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Số tiền <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="soTien"
+                      value={newInvoice.soTien}
+                      onChange={handleInvoiceInputChange}
+                      className={`w-full p-2 border rounded-lg ${
+                        invoiceErrors.soTien
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    {invoiceErrors.soTien && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {invoiceErrors.soTien}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Hạn thanh toán <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="hanThanhToan"
+                      value={newInvoice.hanThanhToan}
+                      onChange={handleInvoiceInputChange}
+                      className={`w-full p-2 border rounded-lg ${
+                        invoiceErrors.hanThanhToan
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    {invoiceErrors.hanThanhToan && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {invoiceErrors.hanThanhToan}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateInvoiceModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmittingInvoice}
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                  >
+                    {isSubmittingInvoice ? "Đang xử lý..." : "Tạo hóa đơn"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Create Success Notification */}
+        {showCreateSuccessNotification && (
+          <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50 animate-fade-in">
+            <CheckCircle className="w-5 h-5" />
+            <span>Tạo hóa đơn thành công!</span>
+          </div>
+        )}
+
+        {/* Create Error Notification */}
+        {showCreateErrorNotification && (
+          <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50 animate-fade-in">
+            <XCircle className="w-5 h-5" />
+            <span>Không thể tạo hóa đơn!</span>
+          </div>
+        )}
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -579,51 +886,201 @@ function InvoiceManager() {
                       <td className="py-3 px-4">
                         <div className="flex justify-center items-center gap-2">
                           <button
-                            onClick={() => handleViewDetails(invoice)}
-                            className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                            title="Xem chi tiết"
+                            className={`p-1 rounded-full ${
+                              invoice.trangThai === "DaThanhToan"
+                                ? "bg-green-100 text-green-800"
+                                : "hover:bg-green-100 text-gray-500"
+                            }`}
+                            disabled={
+                              invoice.trangThai === "DaThanhToan" ||
+                              loadingActionId === invoice.maHoaDon
+                            }
+                            title="Đã thanh toán"
+                            onClick={async () => {
+                              setLoadingActionId(invoice.maHoaDon);
+                              try {
+                                const userData = JSON.parse(
+                                  localStorage.getItem("user")
+                                );
+                                const token = userData?.access_token;
+                                const trangThai = "DaThanhToan";
+                                const ngayThanhToan = new Date()
+                                  .toISOString()
+                                  .split("T")[0];
+                                const res = await fetch(
+                                  `http://localhost:8080/api/invoices/${invoice.maHoaDon}/status`,
+                                  {
+                                    method: "PUT",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                    body: JSON.stringify({
+                                      trangThai,
+                                      ngayThanhToan,
+                                      maQLThu: maQL,
+                                    }),
+                                  }
+                                );
+                                if (!res.ok)
+                                  throw new Error(
+                                    "Cập nhật trạng thái thất bại"
+                                  );
+                                await fetchInvoices();
+                                setShowSuccessNotification(true);
+                                setNotificationMessage(
+                                  "Cập nhật trạng thái hóa đơn thành công!"
+                                );
+                                setTimeout(
+                                  () => setShowSuccessNotification(false),
+                                  2000
+                                );
+                              } catch (err) {
+                                setShowErrorNotification(true);
+                                setNotificationMessage(
+                                  "Không thể cập nhật trạng thái hóa đơn!"
+                                );
+                                setTimeout(
+                                  () => setShowErrorNotification(false),
+                                  2000
+                                );
+                              } finally {
+                                setLoadingActionId(null);
+                              }
+                            }}
                           >
-                            <Eye size={18} />
+                            {loadingActionId === invoice.maHoaDon ? (
+                              <Loader className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <CheckCircle className="w-5 h-5" />
+                            )}
                           </button>
-                          <div className="relative group">
-                            <button className="text-gray-500 hover:text-gray-700">
-                              <MoreHorizontal size={18} />
-                            </button>
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
-                              <button
-                                onClick={() =>
-                                  handleStatusUpdate(
-                                    invoice.maHoaDon,
-                                    "DaThanhToan"
-                                  )
-                                }
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                                disabled={invoice.trangThai === "DaThanhToan"}
-                              >
-                                Đánh dấu đã thanh toán
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleStatusUpdate(
-                                    invoice.maHoaDon,
-                                    "ChuaThanhToan"
-                                  )
-                                }
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                                disabled={invoice.trangThai === "ChuaThanhToan"}
-                              >
-                                Đánh dấu chờ thanh toán
-                              </button>
-                              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center">
-                                <Download className="h-4 w-4 mr-2" />
-                                Tải xuống PDF
-                              </button>
-                              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center">
-                                <Printer className="h-4 w-4 mr-2" />
-                                In hóa đơn
-                              </button>
-                            </div>
-                          </div>
+                          <button
+                            className={`p-1 rounded-full ${
+                              invoice.trangThai === "ChuaThanhToan"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "hover:bg-yellow-100 text-gray-500"
+                            }`}
+                            disabled={
+                              invoice.trangThai === "ChuaThanhToan" ||
+                              loadingActionId === invoice.maHoaDon
+                            }
+                            title="Chờ thanh toán"
+                            onClick={async () => {
+                              setLoadingActionId(invoice.maHoaDon);
+                              try {
+                                const userData = JSON.parse(
+                                  localStorage.getItem("user")
+                                );
+                                const token = userData?.access_token;
+                                const trangThai = "ChuaThanhToan";
+                                const res = await fetch(
+                                  `http://localhost:8080/api/invoices/${invoice.maHoaDon}/status`,
+                                  {
+                                    method: "PUT",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                    body: JSON.stringify({ trangThai }),
+                                  }
+                                );
+                                if (!res.ok)
+                                  throw new Error(
+                                    "Cập nhật trạng thái thất bại"
+                                  );
+                                await fetchInvoices();
+                                setShowSuccessNotification(true);
+                                setNotificationMessage(
+                                  "Cập nhật trạng thái hóa đơn thành công!"
+                                );
+                                setTimeout(
+                                  () => setShowSuccessNotification(false),
+                                  2000
+                                );
+                              } catch (err) {
+                                setShowErrorNotification(true);
+                                setNotificationMessage(
+                                  "Không thể cập nhật trạng thái hóa đơn!"
+                                );
+                                setTimeout(
+                                  () => setShowErrorNotification(false),
+                                  2000
+                                );
+                              } finally {
+                                setLoadingActionId(null);
+                              }
+                            }}
+                          >
+                            {loadingActionId === invoice.maHoaDon ? (
+                              <Loader className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <Clock className="w-5 h-5" />
+                            )}
+                          </button>
+                          <button
+                            className={`p-1 rounded-full ${
+                              invoice.trangThai === "QuaHan"
+                                ? "bg-red-100 text-red-800"
+                                : "hover:bg-red-100 text-gray-500"
+                            }`}
+                            disabled={
+                              invoice.trangThai === "QuaHan" ||
+                              loadingActionId === invoice.maHoaDon
+                            }
+                            title="Quá hạn"
+                            onClick={async () => {
+                              setLoadingActionId(invoice.maHoaDon);
+                              try {
+                                const userData = JSON.parse(
+                                  localStorage.getItem("user")
+                                );
+                                const token = userData?.access_token;
+                                const trangThai = "QuaHan";
+                                const res = await fetch(
+                                  `http://localhost:8080/api/invoices/${invoice.maHoaDon}/status`,
+                                  {
+                                    method: "PUT",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                    body: JSON.stringify({ trangThai }),
+                                  }
+                                );
+                                if (!res.ok)
+                                  throw new Error(
+                                    "Cập nhật trạng thái thất bại"
+                                  );
+                                await fetchInvoices();
+                                setShowSuccessNotification(true);
+                                setNotificationMessage(
+                                  "Cập nhật trạng thái hóa đơn thành công!"
+                                );
+                                setTimeout(
+                                  () => setShowSuccessNotification(false),
+                                  2000
+                                );
+                              } catch (err) {
+                                setShowErrorNotification(true);
+                                setNotificationMessage(
+                                  "Không thể cập nhật trạng thái hóa đơn!"
+                                );
+                                setTimeout(
+                                  () => setShowErrorNotification(false),
+                                  2000
+                                );
+                              } finally {
+                                setLoadingActionId(null);
+                              }
+                            }}
+                          >
+                            {loadingActionId === invoice.maHoaDon ? (
+                              <Loader className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <XCircle className="w-5 h-5" />
+                            )}
+                          </button>
                         </div>
                       </td>
                     </tr>

@@ -16,7 +16,7 @@ const authService = {
         try {
           const payload = JSON.parse(atob(token.split(".")[1]));
           isAdmin = payload.role === "QuanTriVien";
-          adminId = payload.sub; // sub là username hoặc id
+          adminId = payload.sub;
           email = payload.email || null;
           name = payload.name || null;
         } catch (e) {
@@ -49,7 +49,6 @@ const authService = {
     return !!user?.access_token;
   },
   getAdminInfo: async (username) => {
-    // Gọi API lấy danh sách admin, tìm theo taiKhoan
     const res = await axios.get("/api/admin-accounts");
     if (res.data && Array.isArray(res.data.result)) {
       return res.data.result.find((acc) => acc.taiKhoan === username);

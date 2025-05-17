@@ -3,19 +3,18 @@
 import { useState, useEffect } from "react";
 
 const ContractForm = ({ contract, onSubmit, onCancel }) => {
-  // Get user data from localStorage
   const userData = JSON.parse(localStorage.getItem("user") || "{}");
-  const maQuanLyLap = userData?.maQuanLy || "QL001"; // Fallback to QL001 if not found
+  const maQuanLyLap = userData?.maQuanLy || "QL001";
 
   const initialFormState = {
-    ngayLap: new Date().toISOString().split("T")[0], // Set default to current date
+    ngayLap: new Date().toISOString().split("T")[0],
     ngayBatDau: "",
     ngayKetThucDuKien: "",
     tienCoc: "",
     maSV: "",
     maPhong: "",
-    maQuanLyLap: maQuanLyLap, // Use logged in user's maQuanLy
-    status: "DangHieuLuc", // Mặc định - Đang hiệu lực
+    maQuanLyLap: maQuanLyLap,
+    status: "DangHieuLuc",
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -29,7 +28,6 @@ const ContractForm = ({ contract, onSubmit, onCancel }) => {
     }
   }, [contract]);
 
-  // Fetch rooms data
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -58,7 +56,6 @@ const ContractForm = ({ contract, onSubmit, onCancel }) => {
 
         const data = await response.json();
         if (data.code === 0 && data.result) {
-          // Lọc các phòng có trạng thái "Trong", "DangO" hoặc "Day"
           const availableRooms = data.result.filter(
             (room) =>
               room.trangThai === "Trong" ||
@@ -84,7 +81,6 @@ const ContractForm = ({ contract, onSubmit, onCancel }) => {
       [name]: value,
     });
 
-    // Clear error when field is edited
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -105,7 +101,6 @@ const ContractForm = ({ contract, onSubmit, onCancel }) => {
       newErrors.ngayKetThucDuKien = "Vui lòng chọn ngày kết thúc";
     if (!formData.tienCoc) newErrors.tienCoc = "Vui lòng nhập số tiền đặt cọc";
 
-    // Check if end date is after start date
     if (
       formData.ngayBatDau &&
       formData.ngayKetThucDuKien &&
@@ -122,17 +117,15 @@ const ContractForm = ({ contract, onSubmit, onCancel }) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Convert tienCoc to number and ensure status is DangHieuLuc
       const submitData = {
         ...formData,
         tienCoc: Number(formData.tienCoc),
-        status: "DangHieuLuc", // Force status to be DangHieuLuc
+        status: "DangHieuLuc",
       };
       onSubmit(submitData);
     }
   };
 
-  // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
