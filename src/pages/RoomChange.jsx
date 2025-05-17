@@ -1,6 +1,8 @@
+import { useNavigate } from "react-router-dom"
 function RoomChangeRequest() {
+  const navigate = useNavigate()
   return (
-    <div className="flex-1 pt-[85px] p-6">
+    <div className="flex-1 p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold">Phiếu đăng ký chuyển phòng</h2>
       </div>
@@ -75,7 +77,8 @@ function RoomChangeRequest() {
               </div>
               <div>
                 <label className="block text-gray-700 mb-2">Giấy tờ liên quan</label>
-                <input type="file" className="w-full px-4 py-2 bg-gray-200 rounded-md" accept=".pdf, .doc, .docx, .jpg, .png" placeholder="Thêm hình ảnh"/>
+                <input type="file" className="w-full px-4 py-2 bg-gray-200 rounded-md" 
+                accept=".pdf, .doc, .docx, .jpg, .png"/>
               </div>
             </div>
           </div>
@@ -131,7 +134,6 @@ function RoomChangeRequest() {
                 <label className="block text-gray-700 mb-2">Loại phòng</label>
                 <select className="w-full px-4 py-2 bg-gray-200 rounded-md">
                   <option value="">Chọn loại phòng</option>
-                  <option value="2">Phòng 2 người</option>
                   <option value="4">Phòng 4 người</option>
                   <option value="6">Phòng 6 người</option>
                   <option value="8">Phòng 8 người</option>
@@ -170,6 +172,7 @@ function RoomChangeRequest() {
             <button
               type="submit"
               className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+              onClick={() => navigate("/request-success")}
             >
               Gửi thông tin
             </button>

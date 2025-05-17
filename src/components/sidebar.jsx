@@ -15,22 +15,21 @@ const sidebarData = [
     title: "Đăng ký yêu cầu",
     items: [
       { name: "Chuyển phòng", path: "/room-change" },
-      { name: "Đồ dùng", path: "/" },
     ],
   },
   {
     title: "Hỗ trợ và phản ánh",
     items: [
-      { name: "Phản ánh thiết bị", path: "/" },
-      { name: "Phản ánh trực tiếp", path: "/" },
-      { name: "Hỗ trợ khẩn cấp", path: "/" },
+      { name: "Phản ánh thiết bị", path: "/device-report" },
+      { name: "Phản ánh trực tiếp", path: "/report" },
+      { name: "Hỗ trợ khẩn cấp", path: "/emergency-support" },
     ],
   },
   {
     title: "Khác",
     items: [
-      { name: "Quy định ký túc xá", path: "/" },
-      { name: "Lịch sử yêu cầu", path: "/" },
+      { name: "Quy định ký túc xá", path: "/rules" },
+      { name: "Lịch sử yêu cầu", path: "/request-history" },
     ],
   },
 ];

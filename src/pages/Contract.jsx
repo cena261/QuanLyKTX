@@ -1,6 +1,6 @@
 function ContractExtension() {
   return (
-    <div className="flex-1 pt-[85px] p-6">
+    <div className="flex-1 p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold">Thông tin hợp đồng</h2>
         <div className="h-[1px] bg-gray-300 mt-2"></div>
@@ -165,9 +165,7 @@ function ContractExtension() {
                 <label className="block text-gray-700 mb-2">Thời gian gia hạn</label>
                 <select className="w-full px-4 py-2 bg-gray-200 rounded-md">
                   <option value="3">3 tháng</option>
-                  <option value="6" selected>
-                    6 tháng
-                  </option>
+                  <option value="6" defaultValue> 6 tháng</option>
                   <option value="12">12 tháng</option>
                 </select>
               </div>

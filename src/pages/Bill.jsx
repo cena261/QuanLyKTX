@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom"
-
 function BillPayment() {
   const navigate = useNavigate()
 
@@ -8,7 +7,7 @@ function BillPayment() {
   }
 
   return (
-    <div className="flex-1 pt-[85px] p-6">
+    <div className="flex-1 p-6">
       <h2 className="text-2xl font-bold mb-6">Thanh toán trực tuyến</h2>
 
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6">

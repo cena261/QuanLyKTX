@@ -46,7 +46,7 @@ function PersonalInfo() {
   }
 
   return (
-    <div className="flex-1 pt-[85px] p-6">
+    <div className="flex-1 p-6">
       <h2 className="text-2xl font-bold mb-6">Thông tin sinh viên</h2>
 
       <div className="bg-gray-100 rounded-xl p-6 mb-6">
