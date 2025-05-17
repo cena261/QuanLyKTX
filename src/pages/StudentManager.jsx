@@ -10,9 +10,6 @@ import {
   Filter,
   Edit,
   Trash2,
-  Eye,
-  Download,
-  Upload,
   X,
   CheckCircle,
   AlertCircle,
@@ -626,7 +623,7 @@ function StudentManager() {
             </div>
             <div className="relative">
               <select
-                className="h-10 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-white"
+                className="h-10 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-white cursor-pointer"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
@@ -868,7 +865,7 @@ function StudentManager() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mã sinh viên *
+                      Mã sinh viên <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -886,7 +883,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Họ và tên *
+                      Họ và tên <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -906,7 +903,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Lớp *
+                      Lớp <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -924,7 +921,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Khoa *
+                      Khoa <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="khoa"
@@ -948,7 +945,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Số điện thoại *
+                      Số điện thoại <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -967,7 +964,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email *
+                      Email <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -1002,7 +999,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ngày sinh *
+                      Ngày sinh <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="date"
@@ -1022,7 +1019,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      CCCD *
+                      CCCD <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -1157,7 +1154,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Họ và tên *
+                      Họ và tên <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -1177,7 +1174,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Lớp *
+                      Lớp <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -1197,7 +1194,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Khoa *
+                      Khoa <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="khoa"
@@ -1223,7 +1220,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Số điện thoại *
+                      Số điện thoại <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -1244,7 +1241,7 @@ function StudentManager() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email *
+                      Email <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
