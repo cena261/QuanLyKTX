@@ -11,7 +11,7 @@ const LoginPage = () => {
   const [adminPassword, setAdminPassword] = useState("");
   const [error, setError] = useState("");
 
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,17 +38,16 @@ const LoginPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-  }, [isAuthenticated, navigate]);
-
   const handleStudentLogin = async (e) => {
     e.preventDefault();
     try {
-      await login(studentUsername, studentPassword, false);
-      setError("");
+      const userData = await login(studentUsername, studentPassword, false);
+      if (userData.role === "SinhVien") {
+        navigate("/dashboardsv");
+      } else {
+        setError("Sai thông tin tài khoản hoặc mật khẩu");
+        logout();
+      }
     } catch (err) {
       setError("Sai thông tin tài khoản hoặc mật khẩu");
     }
@@ -57,8 +56,13 @@ const LoginPage = () => {
   const handleAdminLogin = async (e) => {
     e.preventDefault();
     try {
-      await login(adminUsername, adminPassword, true);
-      setError("");
+      const userData = await login(adminUsername, adminPassword, true);
+      if (userData.role === "QuanTriVien") {
+        navigate("/dashboard");
+      } else {
+        setError("Sai thông tin tài khoản hoặc mật khẩu");
+        logout();
+      }
     } catch (err) {
       setError("Sai thông tin tài khoản hoặc mật khẩu");
     }

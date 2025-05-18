@@ -9,26 +9,12 @@ const authService = {
       });
       if (response.data.code === 0 && response.data.result.authenticated) {
         const token = response.data.result.token;
-        let isAdmin = false;
-        let adminId = null;
-        let email = null;
-        let name = null;
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          isAdmin = payload.role === "QuanTriVien";
-          adminId = payload.sub;
-          email = payload.email || null;
-          name = payload.name || null;
-        } catch (e) {
-          isAdmin = false;
-        }
+        const role = response.data.result.role;
         const userData = {
           access_token: token,
           username,
-          isAdmin,
-          adminId,
-          email,
-          name,
+          role,
+          isAdmin: role === "QuanTriVien",
         };
         localStorage.setItem("user", JSON.stringify(userData));
         return userData;

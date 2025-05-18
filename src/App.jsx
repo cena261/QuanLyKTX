@@ -13,16 +13,47 @@ import NotificationManager from "./pages/NotificationManager";
 import ContractManager from "./pages/ContractManager";
 import RequestManager from "./pages/RequestManager";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+//Student import
+import DashboardSV from "./pages/sv_pages/Dashboardsv";
+import BillPayment from "./pages/sv_pages/Bill";
+import PaymentConfirmation from "./pages/sv_pages/Pay-confirm";
+import PersonalInfo from "./pages/sv_pages/PersonalInfo";
+import Layout from "@/components/Layout/layout";
+import RoomInfo from "./pages/sv_pages/RoomInfo";
+import ContractExtension from "./pages/sv_pages/Contract";
+import RoomChange from "./pages/sv_pages/RoomChange";
+import DeviceReport from "./pages/sv_pages/DeviceReport";
+import Report from "./pages/sv_pages/Report";
+import EmergencySupport from "./pages/sv_pages/EmergencySupport";
+import Rules from "./pages/sv_pages/Rules";
+import RequestHistory from "./pages/sv_pages/RequestHistory";
+import RequestSuccess from "./pages/sv_pages/RequestSuccess";
+import Notifications from "./pages/sv_pages/Notification";
 
-// Protected Route component
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+// Protected Route component cho quản trị viên
+const AdminProtectedRoute = ({ children }) => {
+  const { isAuthenticated, user, loading } = useAuth();
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || user?.role !== "QuanTriVien") {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
+};
+
+// Protected Route component cho sinh viên
+const StudentProtectedRoute = ({ children }) => {
+  const { isAuthenticated, user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated || user?.role !== "SinhVien") {
     return <Navigate to="/login" />;
   }
 
@@ -35,63 +66,207 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<LoginPage />} />
+
+          {/* Admin Routes */}
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <Dashboard />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             }
           />
           <Route
             path="/student-manager"
             element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <StudentManager />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             }
           />
           <Route
             path="/room-manager"
             element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <RoomManager />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             }
           />
           <Route
             path="/invoice-manager"
             element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <InvoiceManager />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             }
           />
           <Route
             path="/notification-manager"
             element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <NotificationManager />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             }
           />
           <Route
             path="/contract-manager"
             element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <ContractManager />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             }
           />
           <Route
             path="/request-manager"
             element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <RequestManager />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+
+          {/* Student Routes */}
+          <Route
+            path="/dashboardsv"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <DashboardSV />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/bill"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <BillPayment />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment-confirmation"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <PaymentConfirmation />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/personal-info"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <PersonalInfo />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/room-info"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <RoomInfo />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/contract"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <ContractExtension />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/room-change"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <RoomChange />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/device-report"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <DeviceReport />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/report"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <Report />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/emergency-support"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <EmergencySupport />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/rules"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <Rules />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/request-history"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <RequestHistory />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/request-success"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <RequestSuccess />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <StudentProtectedRoute>
+                <Layout>
+                  <Notifications />
+                </Layout>
+              </StudentProtectedRoute>
+            }
+          />
         </Routes>
       </AuthProvider>
     </Router>
