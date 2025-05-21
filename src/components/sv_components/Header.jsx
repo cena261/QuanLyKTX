@@ -37,7 +37,7 @@ function Header() {
         </div>
 
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/dashboardsv")}
           className="cursor-pointer flex items-center"
         >
           <img src={Homepage} alt="Home" className="w-5 h-5" />

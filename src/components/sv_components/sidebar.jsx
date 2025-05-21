@@ -6,22 +6,12 @@ const sidebarData = [
   { title: "Thông tin phòng", path: "/room-info", items: [] },
   {
     title: "Hóa đơn",
-    items: [
-      { name: "Tra cứu thông tin hóa đơn", path: "/bill" },
-      { name: "Đăng ký gia hạn hợp đồng", path: "/contract" },
-    ],
+    items: [{ name: "Tra cứu thông tin hóa đơn", path: "/bill" }],
   },
   {
-    title: "Đăng ký yêu cầu",
+    title: "Hỗ trợ và yêu cầu",
     items: [
-      { name: "Chuyển phòng", path: "/room-change" },
-    ],
-  },
-  {
-    title: "Hỗ trợ và phản ánh",
-    items: [
-      { name: "Phản ánh thiết bị", path: "/device-report" },
-      { name: "Phản ánh trực tiếp", path: "/report" },
+      { name: "Gửi yêu cầu đến quản lý", path: "/report" },
       { name: "Hỗ trợ khẩn cấp", path: "/emergency-support" },
     ],
   },
@@ -29,7 +19,7 @@ const sidebarData = [
     title: "Khác",
     items: [
       { name: "Quy định ký túc xá", path: "/rules" },
-      { name: "Lịch sử yêu cầu", path: "/request-history" },
+      { name: "Thông báo", path: "/notifications" },
     ],
   },
 ];
@@ -89,7 +79,7 @@ function Sidebar() {
         <div className="p-2 border-r border-gray-300 h-full">
           <ul className="list-none pl-1">
             {sidebarData.slice(2).map((section, idx) => {
-              const sectionIdx = 2 + idx; // Tính chỉ số thực trong sidebarData
+              const sectionIdx = 2 + idx;
               return (
                 <li
                   key={sectionIdx}
@@ -100,7 +90,7 @@ function Sidebar() {
                     {section.items.map((item, itemIdx) => (
                       <li
                         key={itemIdx}
-                        className={`px-4 py-2 rounded-xl mt-1 hover:bg-[#2F80ED] hover:text-white ${
+                        className={`px-4 py-2 rounded-xl mt-1 hover:bg-[#2F80ED] hover:text-white cursor-pointer ${
                           activeItem === `item-${sectionIdx}-${itemIdx}`
                             ? "bg-[#2F80ED] text-white"
                             : ""

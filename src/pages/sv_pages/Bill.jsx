@@ -1,9 +1,47 @@
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import studentService from "../../services/student.service";
+
 function BillPayment() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        setLoading(true);
+        const response = await studentService.getInvoices();
+        if (response.code === 0) {
+          setInvoices(response.result.content);
+        } else {
+          setError("Không thể lấy thông tin hóa đơn");
+        }
+      } catch (err) {
+        setError("Có lỗi xảy ra khi tải thông tin");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInvoices();
+  }, []);
 
   const handlePayment = () => {
-    navigate("/payment-confirmation")
+    navigate("/payment-confirmation");
+  };
+
+  const calculateTotal = () => {
+    return invoices.reduce((total, invoice) => total + invoice.soTien, 0);
+  };
+
+  if (loading) {
+    return <div className="flex-1 p-6">Đang tải thông tin...</div>;
+  }
+
+  if (error) {
+    return <div className="flex-1 p-6 text-red-500">{error}</div>;
   }
 
   return (
@@ -15,36 +53,47 @@ function BillPayment() {
           <table className="min-w-full border-collapse">
             <thead>
               <tr className="bg-[#1e5bb7] text-white">
-                <th className="py-3 px-4 border border-gray-300 text-center">Mã</th>
-                <th className="py-3 px-4 border border-gray-300 text-center">Nội dung thu</th>
-                <th className="py-3 px-4 border border-gray-300 text-center">Số lượng</th>
-                <th className="py-3 px-4 border border-gray-300 text-center">Số tiền (VND)</th>
+                <th className="py-3 px-4 border border-gray-300 text-center">
+                  Mã
+                </th>
+                <th className="py-3 px-4 border border-gray-300 text-center">
+                  Nội dung thu
+                </th>
+                <th className="py-3 px-4 border border-gray-300 text-center">
+                  Số lượng
+                </th>
+                <th className="py-3 px-4 border border-gray-300 text-center">
+                  Số tiền (VND)
+                </th>
               </tr>
             </thead>
             <tbody className="text-gray-600">
+              {invoices.map((invoice) => (
+                <tr key={invoice.maHoaDon}>
+                  <td className="py-3 px-4 border border-gray-300 text-center">
+                    {invoice.maHoaDon}
+                  </td>
+                  <td className="py-3 px-4 border border-gray-300">
+                    {invoice.loaiHoaDon}
+                  </td>
+                  <td className="py-3 px-4 border border-gray-300 text-center">
+                    1
+                  </td>
+                  <td className="py-3 px-4 border border-gray-300 text-right">
+                    {Math.round(invoice.soTien).toLocaleString("vi-VN")}
+                  </td>
+                </tr>
+              ))}
               <tr>
-                <td className="py-3 px-4 border border-gray-300 text-center">003</td>
-                <td className="py-3 px-4 border border-gray-300">Tiền thuê phòng tháng 3</td>
-                <td className="py-3 px-4 border border-gray-300 text-center">1</td>
-                <td className="py-3 px-4 border border-gray-300 text-right">1,500,000</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-4 border border-gray-300 text-center">005</td>
-                <td className="py-3 px-4 border border-gray-300">Tiền nước tháng 3</td>
-                <td className="py-3 px-4 border border-gray-300 text-center">3</td>
-                <td className="py-3 px-4 border border-gray-300 text-right">30,000</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-4 border border-gray-300 text-center">006</td>
-                <td className="py-3 px-4 border border-gray-300">Tiền điện tháng 3</td>
-                <td className="py-3 px-4 border border-gray-300 text-center">50</td>
-                <td className="py-3 px-4 border border-gray-300 text-right">175,000</td>
-              </tr>
-              <tr>
-                <td colSpan="3" className="py-3 px-4 border border-gray-300 font-bold">
+                <td
+                  colSpan="3"
+                  className="py-3 px-4 border border-gray-300 font-bold"
+                >
                   Tổng số tiền cần thanh toán
                 </td>
-                <td className="py-3 px-4 border border-gray-300 text-right font-bold">1,705,000</td>
+                <td className="py-3 px-4 border border-gray-300 text-right font-bold">
+                  {Math.round(calculateTotal()).toLocaleString("vi-VN")}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -59,38 +108,8 @@ function BillPayment() {
           </button>
         </div>
       </div>
-
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <h3 className="text-xl font-bold mb-4">Thông tin điện/nước đang sử dụng</h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse">
-            <thead>
-              <tr className="bg-[#1e5bb7] text-white">
-                <th className="py-3 px-4 border border-gray-300 text-center">Thông tin</th>
-                <th className="py-3 px-4 border border-gray-300 text-center">Số cũ</th>
-                <th className="py-3 px-4 border border-gray-300 text-center">Số mới</th>
-                <th className="py-3 px-4 border border-gray-300 text-center">Số lượng tiêu thụ</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-600">
-              <tr>
-                <td className="py-3 px-4 border border-gray-300 text-center">Điện</td>
-                <td className="py-3 px-4 border border-gray-300 text-center">1.250</td>
-                <td className="py-3 px-4 border border-gray-300 text-center">1.320</td>
-                <td className="py-3 px-4 border border-gray-300 text-center">70</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-4 border border-gray-300 text-center">Nước</td>
-                <td className="py-3 px-4 border border-gray-300 text-center">150</td>
-                <td className="py-3 px-4 border border-gray-300 text-center">151</td>
-                <td className="py-3 px-4 border border-gray-300 text-center">4</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
-  )
+  );
 }
 
-export default BillPayment
+export default BillPayment;

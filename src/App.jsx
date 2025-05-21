@@ -20,15 +20,10 @@ import PaymentConfirmation from "./pages/sv_pages/Pay-confirm";
 import PersonalInfo from "./pages/sv_pages/PersonalInfo";
 import Layout from "@/components/Layout/layout";
 import RoomInfo from "./pages/sv_pages/RoomInfo";
-import ContractExtension from "./pages/sv_pages/Contract";
-import RoomChange from "./pages/sv_pages/RoomChange";
-import DeviceReport from "./pages/sv_pages/DeviceReport";
 import Report from "./pages/sv_pages/Report";
 import EmergencySupport from "./pages/sv_pages/EmergencySupport";
 import Rules from "./pages/sv_pages/Rules";
-import RequestHistory from "./pages/sv_pages/RequestHistory";
-import RequestSuccess from "./pages/sv_pages/RequestSuccess";
-import Notifications from "./pages/sv_pages/Notification";
+import Notification from "./pages/sv_pages/Notification";
 
 // Protected Route component cho quản trị viên
 const AdminProtectedRoute = ({ children }) => {
@@ -62,8 +57,8 @@ const StudentProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
+    <AuthProvider>
+      <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<LoginPage />} />
@@ -178,36 +173,6 @@ function App() {
             }
           />
           <Route
-            path="/contract"
-            element={
-              <StudentProtectedRoute>
-                <Layout>
-                  <ContractExtension />
-                </Layout>
-              </StudentProtectedRoute>
-            }
-          />
-          <Route
-            path="/room-change"
-            element={
-              <StudentProtectedRoute>
-                <Layout>
-                  <RoomChange />
-                </Layout>
-              </StudentProtectedRoute>
-            }
-          />
-          <Route
-            path="/device-report"
-            element={
-              <StudentProtectedRoute>
-                <Layout>
-                  <DeviceReport />
-                </Layout>
-              </StudentProtectedRoute>
-            }
-          />
-          <Route
             path="/report"
             element={
               <StudentProtectedRoute>
@@ -238,38 +203,18 @@ function App() {
             }
           />
           <Route
-            path="/request-history"
-            element={
-              <StudentProtectedRoute>
-                <Layout>
-                  <RequestHistory />
-                </Layout>
-              </StudentProtectedRoute>
-            }
-          />
-          <Route
-            path="/request-success"
-            element={
-              <StudentProtectedRoute>
-                <Layout>
-                  <RequestSuccess />
-                </Layout>
-              </StudentProtectedRoute>
-            }
-          />
-          <Route
             path="/notifications"
             element={
               <StudentProtectedRoute>
                 <Layout>
-                  <Notifications />
+                  <Notification />
                 </Layout>
               </StudentProtectedRoute>
             }
           />
         </Routes>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

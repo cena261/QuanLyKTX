@@ -57,7 +57,7 @@ function NotificationManager() {
     return () => {
       websocketService.disconnect();
     };
-  }, [isAdmin, logout, navigate]);
+  }, [isAdmin, logout, navigate, currentPage]);
 
   useEffect(() => {
     if (notificationType === "personal") {
@@ -120,7 +120,10 @@ function NotificationManager() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await notificationService.getAllNotifications();
+      const response = await notificationService.getAllNotifications(
+        currentPage,
+        pageSize
+      );
       if (response.code === 0 && response.result) {
         setNotifications(response.result.content || []);
         setTotalPages(response.result.totalPages);
@@ -482,6 +485,17 @@ function NotificationManager() {
               </div>
               <div className="flex gap-2">
                 <button
+                  onClick={() => setCurrentPage(0)}
+                  disabled={currentPage === 0}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === 0
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  Đầu
+                </button>
+                <button
                   onClick={() =>
                     setCurrentPage((prev) => Math.max(prev - 1, 0))
                   }
@@ -519,6 +533,17 @@ function NotificationManager() {
                   }`}
                 >
                   Sau
+                </button>
+                <button
+                  onClick={() => setCurrentPage(totalPages - 1)}
+                  disabled={currentPage === totalPages - 1}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === totalPages - 1
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  Cuối
                 </button>
               </div>
             </div>

@@ -10,10 +10,14 @@ const getAuthHeader = () => {
 };
 
 export const notificationService = {
-  getAllNotifications: async () => {
+  getAllNotifications: async (page = 0, size = 10) => {
     try {
       const response = await axios.get(`${API_URL}/notifications`, {
         headers: getAuthHeader(),
+        params: {
+          page,
+          size,
+        },
       });
       return response.data;
     } catch (error) {
