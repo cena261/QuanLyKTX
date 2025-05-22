@@ -12,6 +12,7 @@ import {
   Check,
   XCircle,
 } from "lucide-react";
+import { notificationService } from "../services/notification.service";
 
 function RequestManager() {
   const { isAdmin, logout } = useAuth();
@@ -28,6 +29,10 @@ function RequestManager() {
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [rejectionTitle, setRejectionTitle] = useState("");
+  const [rejectionContent, setRejectionContent] = useState("");
+  const [maQL, setMaQL] = useState("");
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -78,7 +83,7 @@ function RequestManager() {
       activeTab === "all" ||
       (activeTab === "DangCho" && request.trangThai === "DangCho") ||
       (activeTab === "DangXuLy" && request.trangThai === "DangXuLy") ||
-      (activeTab === "DaDuyet" && request.trangThai === "DaDuyet") ||
+      (activeTab === "HoanThanh" && request.trangThai === "HoanThanh") ||
       (activeTab === "TuChoi" && request.trangThai === "TuChoi");
 
     const matchesSearch =
@@ -118,7 +123,7 @@ function RequestManager() {
                 ? new Date().toISOString().split("T")[0]
                 : null,
             ngayHoanThanh:
-              newStatus === "DaDuyet"
+              newStatus === "HoanThanh"
                 ? new Date().toISOString().split("T")[0]
                 : null,
           }),
@@ -152,6 +157,113 @@ function RequestManager() {
     }
   };
 
+  const handleRejectRequest = async (e) => {
+    e.preventDefault();
+    if (!rejectionTitle.trim() || !rejectionContent.trim()) {
+      setShowErrorNotification(true);
+      setTimeout(() => setShowErrorNotification(false), 3000);
+      return;
+    }
+
+    try {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      const token = userData?.access_token;
+
+      const adminResponse = await fetch(
+        "http://localhost:8080/api/admin-accounts",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!adminResponse.ok) {
+        throw new Error("Failed to get admin information");
+      }
+
+      const adminData = await adminResponse.json();
+      if (!adminData.result || !Array.isArray(adminData.result)) {
+        throw new Error("Invalid admin data format");
+      }
+
+      const currentAdmin = adminData.result.find(
+        (admin) => admin.taiKhoan === userData.username
+      );
+
+      if (!currentAdmin || !currentAdmin.maQL) {
+        throw new Error("Không tìm thấy mã quản lý");
+      }
+
+      const maQL = currentAdmin.maQL;
+
+      const notificationData = {
+        tieuDe: rejectionTitle,
+        noiDung: rejectionContent,
+        loai: "HE_THONG",
+        maQLGui: maQL,
+        maSV: selectedRequest.maSV,
+      };
+
+      const notificationResponse = await fetch(
+        "http://localhost:8080/api/notifications",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(notificationData),
+        }
+      );
+
+      const notificationResult = await notificationResponse.json();
+      if (notificationResult.code !== 0) {
+        throw new Error(
+          notificationResult.message || "Failed to send notification"
+        );
+      }
+
+      const deleteResponse = await fetch(
+        `http://localhost:8080/api/repair-requests/${selectedRequest.maYeuCau}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!deleteResponse.ok) {
+        throw new Error("Failed to delete request");
+      }
+
+      const updatedResponse = await fetch(
+        `http://localhost:8080/api/repair-requests/paged?page=${currentPage}&size=20`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const updatedData = await updatedResponse.json();
+      if (updatedData.code === 0 && updatedData.result) {
+        setRequests(updatedData.result.content);
+      }
+
+      setRejectionTitle("");
+      setRejectionContent("");
+      setShowRejectionModal(false);
+      setShowSuccessNotification(true);
+      setTimeout(() => setShowSuccessNotification(false), 3000);
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      setShowErrorNotification(true);
+      setTimeout(() => setShowErrorNotification(false), 3000);
+    }
+  };
+
   const StatusBadge = ({ status }) => {
     let bgColor = "";
     let textColor = "text-white";
@@ -169,7 +281,7 @@ function RequestManager() {
         statusText = "Đang xử lý";
         icon = <Clock className="w-4 h-4" />;
         break;
-      case "DaDuyet":
+      case "HoanThanh":
         bgColor = "bg-green-500";
         statusText = "Đã duyệt";
         icon = <Check className="w-4 h-4" />;
@@ -311,11 +423,11 @@ function RequestManager() {
               </button>
               <button
                 className={`px-4 py-2 rounded-lg whitespace-nowrap ${
-                  activeTab === "DaDuyet"
+                  activeTab === "HoanThanh"
                     ? "bg-primary text-white"
                     : "bg-gray-200 text-gray-700"
                 }`}
-                onClick={() => setActiveTab("DaDuyet")}
+                onClick={() => setActiveTab("HoanThanh")}
               >
                 Đã duyệt
               </button>
@@ -390,9 +502,10 @@ function RequestManager() {
                                 Xử lý
                               </button>
                               <button
-                                onClick={() =>
-                                  handleStatusChange(request.maYeuCau, "TuChoi")
-                                }
+                                onClick={() => {
+                                  setSelectedRequest(request);
+                                  setShowRejectionModal(true);
+                                }}
                                 className="text-red-600 hover:text-red-800"
                               >
                                 Từ chối
@@ -402,7 +515,10 @@ function RequestManager() {
                           {request.trangThai === "DangXuLy" && (
                             <button
                               onClick={() =>
-                                handleStatusChange(request.maYeuCau, "DaDuyet")
+                                handleStatusChange(
+                                  request.maYeuCau,
+                                  "HoanThanh"
+                                )
                               }
                               className="text-green-600 hover:text-green-800"
                             >
@@ -604,7 +720,10 @@ function RequestManager() {
                   {selectedRequest.trangThai === "DangXuLy" && (
                     <button
                       onClick={() =>
-                        handleStatusChange(selectedRequest.maYeuCau, "DaDuyet")
+                        handleStatusChange(
+                          selectedRequest.maYeuCau,
+                          "HoanThanh"
+                        )
                       }
                       className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
                     >
@@ -613,6 +732,68 @@ function RequestManager() {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Rejection Modal */}
+        {showRejectionModal && selectedRequest && (
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg w-[90%] max-w-2xl max-h-[90vh] flex flex-col shadow-xl">
+              <div className="p-4 border-b flex justify-between items-center">
+                <h2 className="text-xl font-bold">Từ chối yêu cầu</h2>
+                <button
+                  onClick={() => setShowRejectionModal(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <form
+                className="p-4 overflow-y-auto"
+                onSubmit={handleRejectRequest}
+              >
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tiêu đề thông báo
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded-lg border-gray-300"
+                    placeholder="Nhập tiêu đề thông báo"
+                    value={rejectionTitle}
+                    onChange={(e) => setRejectionTitle(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nội dung thông báo
+                  </label>
+                  <textarea
+                    className="w-full p-2 border rounded-lg border-gray-300 min-h-[100px]"
+                    placeholder="Nhập nội dung thông báo"
+                    value={rejectionContent}
+                    onChange={(e) => setRejectionContent(e.target.value)}
+                    required
+                  ></textarea>
+                </div>
+                <div className="flex justify-end gap-2 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowRejectionModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                  >
+                    Gửi thông báo và từ chối
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

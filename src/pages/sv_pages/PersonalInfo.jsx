@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import studentService from "../../services/student.service";
+import studentService from "@/services/student.service";
+import Frame from "@/assets/img/Frame.png";
 
 function PersonalInfo() {
   const [studentData, setStudentData] = useState(null);
@@ -57,7 +58,7 @@ function PersonalInfo() {
           <div className="w-[150px] h-[150px] relative mx-auto md:mx-0 mb-6 md:mb-0 md:mr-8">
             <div className="w-full h-full rounded-full bg-gray-300 overflow-hidden">
               <img
-                src="/profile-silhouette.jpg"
+                src={Frame}
                 alt="Student profile"
                 className="w-full h-full object-cover"
               />

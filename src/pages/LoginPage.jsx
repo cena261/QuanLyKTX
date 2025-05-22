@@ -43,7 +43,7 @@ const LoginPage = () => {
     try {
       const userData = await login(studentUsername, studentPassword, false);
       if (userData.role === "SinhVien") {
-        navigate("/dashboardsv");
+        navigate("/personal-info");
       } else {
         setError("Sai thông tin tài khoản hoặc mật khẩu");
         logout();

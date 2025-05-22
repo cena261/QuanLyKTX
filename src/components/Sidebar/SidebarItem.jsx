@@ -1,6 +1,7 @@
 import { cloneElement } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import authService from "../../services/auth.service";
 
 const SidebarItem = ({ item }) => {
   const { label, icon, path } = item;
@@ -10,10 +11,16 @@ const SidebarItem = ({ item }) => {
 
   const isActive = location.pathname === path;
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (label === "Đăng xuất") {
-      logout();
-      navigate("/login");
+      try {
+        authService.clearUserData();
+        logout();
+        window.location.href = "/";
+      } catch (error) {
+        console.error("Logout error:", error);
+        window.location.href = "/";
+      }
     } else if (path) {
       navigate(path);
     }

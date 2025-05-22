@@ -47,6 +47,7 @@ const items = [
   {
     label: "Đăng xuất",
     icon: <Logout className="w-[20px] h-[20px]" />,
+    path: "/login",
   },
 ];
 

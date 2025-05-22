@@ -21,7 +21,6 @@ function RoomInfo() {
           setRoomData(roomResponse.result);
           setContractData(contractResponse.result);
 
-          // Fetch room students after getting room info
           const studentsResponse = await studentService.getRoomStudents(
             roomResponse.result.maPhong
           );

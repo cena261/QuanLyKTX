@@ -12,7 +12,7 @@ axios.defaults.validateStatus = function (status) {
 axios.interceptors.request.use(
   (config) => {
     const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.access_token) {
+    if (user?.access_token) {
       config.headers.Authorization = `Bearer ${user.access_token}`;
     }
     return config;
@@ -27,9 +27,13 @@ axios.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+    if (error.response) {
+      if (error.response.status === 401) {
+        localStorage.removeItem("user");
+        if (!window.location.pathname.includes("/login")) {
+          window.location.href = "/login";
+        }
+      }
     }
     return Promise.reject(error);
   }

@@ -1,16 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLogo from "@/assets/img/sv_logo_dashboard.png";
 import SearchLogo from "@/assets/icons/search-normal.png";
 import Homepage from "@/assets/icons/home-page.png";
-import Notification from "@/assets/icons/bell.png";
+import Notification from "@/assets/icons/Bell.png";
 import DownArrow from "@/assets/icons/down-arrow.png";
 import PasswordChangeModal from "@/components/sv_components/ChangePassword";
+import studentService from "@/services/student.service";
 
 function Header() {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [studentInfo, setStudentInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchStudentInfo = async () => {
+      try {
+        const response = await studentService.getStudentInfo();
+        if (response.code === 0) {
+          setStudentInfo(response.result);
+        }
+      } catch (error) {
+        console.error("Error fetching student info:", error);
+      }
+    };
+
+    fetchStudentInfo();
+  }, []);
+
   const handlePasswordChange = () => {
     setDropdownOpen(false);
     setPasswordModalOpen(true);
@@ -37,7 +55,7 @@ function Header() {
         </div>
 
         <button
-          onClick={() => navigate("/dashboardsv")}
+          onClick={() => navigate("/personal-info")}
           className="cursor-pointer flex items-center"
         >
           <img src={Homepage} alt="Home" className="w-5 h-5" />
@@ -54,9 +72,11 @@ function Header() {
 
         <div className="mr-4 md:flex md:items-center md:gap-2 md:mr-12 relative">
           <div>
-            <h4 className="leading-none">Nguyễn Văn A</h4>
+            <h4 className="leading-none">
+              {studentInfo?.hoTen || "Loading..."}
+            </h4>
             <h6 className="text-sm opacity-50 leading-none">
-              nguyenvana@gmail.com
+              {studentInfo?.email || "Loading..."}
             </h6>
           </div>
           <button

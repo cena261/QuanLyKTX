@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import Dashboard from "./pages/DashBoard";
+import Dashboard from "./pages/Dashboard";
 import StudentManager from "./pages/StudentManager";
 import RoomManager from "./pages/RoomManager";
 import InvoiceManager from "./pages/InvoiceManager";
@@ -14,7 +14,6 @@ import ContractManager from "./pages/ContractManager";
 import RequestManager from "./pages/RequestManager";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 //Student import
-import DashboardSV from "./pages/sv_pages/Dashboardsv";
 import BillPayment from "./pages/sv_pages/Bill";
 import PaymentConfirmation from "./pages/sv_pages/Pay-confirm";
 import PersonalInfo from "./pages/sv_pages/PersonalInfo";
@@ -122,16 +121,6 @@ function App() {
           />
 
           {/* Student Routes */}
-          <Route
-            path="/dashboardsv"
-            element={
-              <StudentProtectedRoute>
-                <Layout>
-                  <DashboardSV />
-                </Layout>
-              </StudentProtectedRoute>
-            }
-          />
           <Route
             path="/bill"
             element={

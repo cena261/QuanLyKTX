@@ -4,7 +4,7 @@ import authService from "../services/auth.service";
 import DashboardLogo from "../assets/img/sv_logo_dashboard.png";
 import SearchLogo from "../assets/icons/search-normal.png";
 import Homepage from "../assets/icons/home-page.png";
-import Notification from "../assets/icons/bell.png";
+import Notification from "../assets/icons/Bell.png";
 import DownArrow from "../assets/icons/down-arrow.png";
 import { useNavigate } from "react-router-dom";
 
